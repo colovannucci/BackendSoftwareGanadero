@@ -19,6 +19,14 @@ app.use("/api/v1/products", v1ProductRouter);
 const v1UserRouter = require("./APIv1/Routes/user_routes");
 app.use("/api/v1/users", v1UserRouter);
 
+const v1AuthorizationRouter = require("./APIv1/Routes/authorization_routes");
+app.use("/api/v1/authorizations", v1AuthorizationRouter);
+
+const v1RefreshTokenRouter = require("./APIv1/Routes/refresh_token_routes");
+app.use("/api/v1/refreshtokens", v1RefreshTokenRouter);
+
+const v1AccessTokenRouter = require("./APIv1/Routes/access_token_routes");
+app.use("/api/v1/accesstokens", v1AccessTokenRouter);
 
 // If any route matches, request fails and send this
 app.use('*', (req, res) => {
