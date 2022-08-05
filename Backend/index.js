@@ -20,7 +20,7 @@ const v1UserRouter = require("./APIv1/Routes/user_routes");
 app.use("/api/v1/users", v1UserRouter);
 
 const v1AuthorizationRouter = require("./APIv1/Routes/authorization_routes");
-app.use("/api/v1/authorizations", v1AuthorizationRouter);
+app.use("/api/v1/auth", v1AuthorizationRouter);
 
 const v1AccessTokenRouter = require("./APIv1/Routes/access_token_routes");
 app.use("/api/v1/accesstokens", v1AccessTokenRouter);
