@@ -3,7 +3,7 @@
 
 const express = require("express");
 const authenticationAPIRouter = express.Router();
-const authorizationController = require("../../Modules/Authorization/authorization_controller");
+const authorizationController = require("../Modules/Authorization/authorization_controller");
 
 authenticationAPIRouter
   .post("/signup", authorizationController.signUp)

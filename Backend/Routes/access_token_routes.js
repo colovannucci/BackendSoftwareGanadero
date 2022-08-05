@@ -3,7 +3,7 @@
 
 const express = require("express");
 const accessTokenAPIRouter = express.Router();
-const accessTokenController = require("../../Modules/AccessToken/access_token_controller");
+const accessTokenController = require("../Modules/AccessToken/access_token_controller");
 
 
 accessTokenAPIRouter
