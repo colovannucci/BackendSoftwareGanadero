@@ -6,20 +6,6 @@ const UserDBModel = require('./user_model');
 
 const refreshTokenController = require('../RefreshToken/refresh_token_controller');
 
-function getAllUsers (req, res) {
-    // Search for products without any query parameters
-    UserDBModel.find({})
-        .then(usersFound => {
-          if (!usersFound) return res.status(500).send({ status: "ERROR", message: 'There are no products' });
-
-          res.status(200).send({ status: "OK", users: usersFound });
-        })
-        .catch(err => {
-          res.status(500).send({ status: "ERROR", message: 'Error finding all users' });
-          console.log(`Error finding all users: ${err}`);
-        });
-}
-
 function getUser (req, res) {
     const userEmail = req.params.email;
 
@@ -95,10 +81,40 @@ function signOut(req, res){
   res.status(200).send({ status: "OK", message: 'User signed out successfully' });
 }
 
+function updateLastLoginTime(userEmail){
+
+  const lastLoginTime = Date().toLocaleString("en-US", { timezone: "UTC" });
+  // Search and Update in DB
+  UserDBModel.updateOne({ email: userEmail }, { lastLogin: lastLoginTime })
+      .then(userFound => {
+        console.log('Last login time updated succesfully');
+        return true;
+      })
+      .catch(err => {
+        console.log(`Error updating last login time ${userEmail}-Error: ${err}`);
+        return false;
+      });
+}
+
+function getAllUsers (req, res) {
+  // Search for products without any query parameters
+  UserDBModel.find({})
+    .then(usersFound => {
+      if (!usersFound) return res.status(500).send({ status: "ERROR", message: 'There are no products' });
+    
+      res.status(200).send({ status: "OK", users: usersFound });
+    })
+    .catch(err => {
+      console.log(`Error finding all users: ${err}`);
+      res.status(500).send({ status: "ERROR", message: 'Error finding all users' });
+    });
+}
+
 module.exports = {
-    getAllUsers,
     getUser,
     updateUser,
     deleteUser,
-    signOut
+    signOut,
+    updateLastLoginTime,
+    getAllUsers
 }

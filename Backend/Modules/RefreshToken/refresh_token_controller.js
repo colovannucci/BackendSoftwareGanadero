@@ -18,38 +18,55 @@ function generateRefreshToken(user){
 }
 
 function saveRefreshToken(userEmail, refreshToken){
-    const isAlreadySaved = RefreshTokenDBModel.findOne({ userEmail: userEmail });
-    if (isAlreadySaved) {
-        // Search in users DB by email address and update it
-        RefreshTokenDBModel.deleteOne({ email: userEmail })
-            .then(tokendeleted => {
-                console.log(`Refresh token deleted: ${tokendeleted.email}`);
-                return true;
-            })
-            .catch(err => {
-                console.log(`Error updating refresh token of: ${erruserEmail}-Error: ${err}`);
-                return false;
-            });
-    }
-    // Declare the refresh token and save it in DB
-    const newRefreshToken = new RefreshTokenDBModel();
-    newRefreshToken.email = userEmail;
-    newRefreshToken.token = refreshToken;
-    // Add fields createdId, createdAt and expiresAt
-    newRefreshToken.createdId = uuid();
-    newRefreshToken.createdAt = Date().toLocaleString("en-US", { timezone: "UTC" });
-    newRefreshToken.expiresAt = moment().add(30, 'days').unix();
 
-    // Store new refresh token in DB
-    newRefreshToken.save()
-        .then(tokenStored => {
-            console.log(`Refresh token saved: ${tokenStored.email}`);
-            return true;           
-        })
-        .catch(err => {
-            console.log(`Error saving new refresh token: ${err}`);
-            return false;
-        });
+    RefreshTokenDBModel.findOne({ email: userEmail }, function (err, record) {
+        if (record == null){
+            // Declare the refresh token and save it in DB
+            const newRefreshToken = new RefreshTokenDBModel();
+            newRefreshToken.email = userEmail;
+            newRefreshToken.refreshToken = refreshToken;
+            // Add fields createdId, createdAt and expiresAt
+            newRefreshToken.createdId = uuid();
+            newRefreshToken.createdAt = Date().toLocaleString("en-US", { timezone: "UTC" });
+            newRefreshToken.expiresAt = moment().add(30, 'days').unix();
+
+            console.log("NEW REFRESH TOKEN");
+            console.log(newRefreshToken)
+            // Store new refresh token in DB
+            newRefreshToken.save()
+                .then(tokenStored => {
+                    console.log('Refresh token saved successfully');
+                    return true;           
+                })
+                .catch(err => {
+                    console.log(`Error saving new refresh token: ${err}`);
+                    return false;
+                });
+        } else {
+            RefreshTokenDBModel.updateOne({ email: userEmail }, { refreshToken: refreshToken}, function (err, updated) {
+                if (updated == null){
+                    return false;
+                } else {
+                    return true;
+                }
+            })
+        }
+    })
+    /*
+    const isAlreadySaved = RefreshTokenDBModel.findOne({ userEmail: userEmail });
+    if (isAlreadySaved == null) {
+        
+    } else {
+        
+    }
+    
+    const deletedTokenResponse = deleteRefreshToken(userEmail);
+    console.log('Deleted refresh token');
+    console.log(deletedToken);
+    if (deletedToken === false){
+        
+    }
+    */
 }
 
 function deleteRefreshToken(userEmail){
@@ -60,16 +77,17 @@ function deleteRefreshToken(userEmail){
             return true;
         })
         .catch(err => {
-            console.log(`Error updating refresh token of: ${userEmail}-Error: ${err}`);
+            console.log(`Error deleting refresh token of: ${userEmail}-Error: ${err}`);
             return false;
         });
+    //return false;
 }
 
 function getAllRefreshTokens(req, res){
     // Search for products without any query parameters
     RefreshTokenDBModel.find({})
         .then(tokensFound => {
-            res.status(200).send({ status: "OK", tokens: tokensFound });
+            res.status(200).send({ status: "OK", refreshTokens: tokensFound });
         })
         .catch(err => {
             res.status(500).send({ status: "ERROR", message: 'Error finding all tokens' });
@@ -77,14 +95,9 @@ function getAllRefreshTokens(req, res){
         });
 }
 
-function getRefreshToken(req, res) {
-
-}
-
 module.exports = {
     generateRefreshToken,
     saveRefreshToken,
     deleteRefreshToken,
-    getAllRefreshTokens,
-    getRefreshToken
+    getAllRefreshTokens
 }

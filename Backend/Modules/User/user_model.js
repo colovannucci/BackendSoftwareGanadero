@@ -12,8 +12,8 @@ const UserSchema = new Schema({
     name: { type: String, required: true },
     surname: { type: String, required: true },
     phone: { type: String, required: true },
+    birthDate: { type: String, required: true },
     country: { type: String },
-    birthDate: { type: Date},//, required: true }, // PENDING: aceptar fecha desde rest body
     createdId: { type: String },
     createdAt: { type: Date },
     updatedAt: { type: Date },

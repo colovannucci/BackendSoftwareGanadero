@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 
 const RefreshTokenSchema = Schema({
     email: { type: String, unique: true, required: true },
-    token: { type: String, unique: true, required: true},
+    refreshToken: { type: String, unique: true, required: true},
     createdId: { type: String },
     createdAt: { type: Date },
     expiresAt: { type: Date }

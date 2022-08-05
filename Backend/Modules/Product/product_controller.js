@@ -11,18 +11,6 @@ const ProductDBModel = require('./product_model');
 // In the future it will be in .env file
 const validCategories = ['computers', 'phones', 'accesories'];
 
-function getAllProducts (req, res) {
-    // Search for products without any query parameters
-    ProductDBModel.find({})
-        .then(productsFound => {
-            res.status(200).send({ status: "OK", products: productsFound });
-        })
-        .catch(err => {
-            res.status(500).send({ status: "ERROR", message: 'Error finding all products' });
-            console.log(`Error finding all products: ${err}`);
-        });
-}
-
 function getProduct (req, res) {
     const productId = req.params.productId;
 
@@ -119,6 +107,18 @@ function deleteProduct (req, res) {
         res.status(500).send({ status: "ERROR", message: 'Error deleting product' });
         console.log(`Error deleting product ${userEmail}-Error: ${err}`);
       });
+}
+
+function getAllProducts (req, res) {
+    // Search for products without any query parameters
+    ProductDBModel.find({})
+        .then(productsFound => {
+            res.status(200).send({ status: "OK", products: productsFound });
+        })
+        .catch(err => {
+            res.status(500).send({ status: "ERROR", message: 'Error finding all products' });
+            console.log(`Error finding all products: ${err}`);
+        });
 }
 
 module.exports = {

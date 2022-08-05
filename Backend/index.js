@@ -22,11 +22,11 @@ app.use("/api/v1/users", v1UserRouter);
 const v1AuthorizationRouter = require("./APIv1/Routes/authorization_routes");
 app.use("/api/v1/authorizations", v1AuthorizationRouter);
 
-const v1RefreshTokenRouter = require("./APIv1/Routes/refresh_token_routes");
-app.use("/api/v1/refreshtokens", v1RefreshTokenRouter);
-
 const v1AccessTokenRouter = require("./APIv1/Routes/access_token_routes");
 app.use("/api/v1/accesstokens", v1AccessTokenRouter);
+
+const v1TestRouter = require("./APIv1/Routes/test_routes");
+app.use("/api/v1/test", v1TestRouter);
 
 // If any route matches, request fails and send this
 app.use('*', (req, res) => {
@@ -34,13 +34,13 @@ app.use('*', (req, res) => {
 });
 
 // MondoDB connection
-mongoose.connect('mongodb://localhost:27017/shops', (err, res) => {
+mongoose.connect(process.env.MONGO_DB_HOST, (err, res) => {
     if (err) { return console.log(`Error connecting to database: ${err}`)};
     console.log('Connected to MongoDB');
 
     // Server connection
-    app.listen(PORT, () => {
-        console.log(`Web server listening on port ${PORT}`)
+    app.listen(process.env.APP_PORT, () => {
+        console.log(`Web server listening on port ${process.env.APP_PORT}`)
     });
     // Web server created
 });

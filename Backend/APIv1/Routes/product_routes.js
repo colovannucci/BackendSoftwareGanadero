@@ -10,7 +10,6 @@ const authenticationMiddleware = require('../../Middlewares/authentication_middl
 productAPIRouter.use(authenticationMiddleware);
 
 productAPIRouter
-  .get("/all/", productController.getAllProducts)
   .get("/one/:productId", productController.getProduct)
   .post("/create", productController.createProduct)
   .patch("/update/:productId", productController.updateProduct)

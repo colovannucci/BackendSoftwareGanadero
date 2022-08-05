@@ -10,6 +10,8 @@ const UserDBModel = require('../User/user_model');
 
 const refreshTokenController = require('../RefreshToken/refresh_token_controller');
 const accessTokenController = require('../AccessToken/access_token_controller');
+const userController = require('../User/user_controller');
+
 
 const bcrypt = require('bcrypt');
 
@@ -42,13 +44,12 @@ async function signUp (req, res) {
       return res.status(400).send({ status: "ERROR", message: 'Email already exists' });
     }
 
-
-    // Declare new product object with data received
+    // Declare new user object with data received
     const newUser = new UserDBModel();
     newUser.email = body.email;
     newUser.name = body.name;
     newUser.surname = body.surname;
-    //newUser.birthDate = body.birthDate; PENDING: completar cuando descubra como mandar dates en body
+    newUser.birthDate = body.birthDate;
     newUser.phone = body.phone;
     // Add fields country (if required), createdId, createdAt and updatedAt
     if (!body.country) {
@@ -107,13 +108,11 @@ async function signIn(req, res){
             
             // Generate new tokens 
             const accessToken = accessTokenController.generateAccessToken(userFound);
-            if (!accessToken
-            ) {
+            if (!accessToken) {
               return res.status(500).send({ status: "ERROR", message: 'Access Token creation failed' });
             }
             const refreshToken = refreshTokenController.generateRefreshToken(userFound);
-            if (!refreshToken
-            ) {
+            if (!refreshToken) {
               return res.status(500).send({ status: "ERROR", message: 'Refresh Token creation failed' });
             }
 
@@ -121,6 +120,12 @@ async function signIn(req, res){
             const refreshTokenStored = refreshTokenController.saveRefreshToken(userEmail, refreshToken);
             if (refreshTokenStored === false) {
               return res.status(500).send({ status: "ERROR", message: 'Refresh Token saving failed' });
+            }
+
+            // Update user with new login date
+            const userUpdated = userController.updateLastLoginTime(userEmail);
+            if (userUpdated === false) {
+              return res.status(500).send({ status: "ERROR", message: 'Last login time saving failed' });
             }
 
             // Send response with tokens
