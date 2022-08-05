@@ -32,7 +32,7 @@ app.use("/api/v1/test", v1TestRouter);
 
 // If any route matches, request fails and send this
 app.use('*', (req, res) => {
-  res.status(404).send("Parece que te has perdido");
+  res.status(404).send({ status: "ERROR", message: "Are you lost?" });
 });
 
 
