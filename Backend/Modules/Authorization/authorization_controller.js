@@ -65,8 +65,7 @@ async function signUp (req, res) {
     try {
       const hashedPassword = await bcrypt.hash(body.password, 10);
       newUser.password = hashedPassword;
-      console.log(`Password hashed successfully`);
-      console.log(hashedPassword);
+
       // Store new product in DB
       newUser.save()
         .then(userStored => {

@@ -25,22 +25,25 @@ app.use("/api/v1/authorizations", v1AuthorizationRouter);
 const v1AccessTokenRouter = require("./APIv1/Routes/access_token_routes");
 app.use("/api/v1/accesstokens", v1AccessTokenRouter);
 
+/*
 const v1TestRouter = require("./APIv1/Routes/test_routes");
 app.use("/api/v1/test", v1TestRouter);
+*/
 
 // If any route matches, request fails and send this
 app.use('*', (req, res) => {
   res.status(404).send("Parece que te has perdido");
 });
 
+
 // MondoDB connection
-mongoose.connect(process.env.MONGO_DB_HOST, (err, res) => {
+mongoose.connect(process.env.MONGO_DB_URI, (err, res) => {
     if (err) { return console.log(`Error connecting to database: ${err}`)};
     console.log('Connected to MongoDB');
 
     // Server connection
-    app.listen(process.env.APP_PORT, () => {
-        console.log(`Web server listening on port ${process.env.APP_PORT}`)
+    app.listen(PORT, () => {
+        console.log(`Web server listening on port ${PORT}`)
     });
     // Web server created
 });

@@ -30,8 +30,6 @@ function saveRefreshToken(userEmail, refreshToken){
             newRefreshToken.createdAt = Date().toLocaleString("en-US", { timezone: "UTC" });
             newRefreshToken.expiresAt = moment().add(30, 'days').unix();
 
-            console.log("NEW REFRESH TOKEN");
-            console.log(newRefreshToken)
             // Store new refresh token in DB
             newRefreshToken.save()
                 .then(tokenStored => {
@@ -52,21 +50,7 @@ function saveRefreshToken(userEmail, refreshToken){
             })
         }
     })
-    /*
-    const isAlreadySaved = RefreshTokenDBModel.findOne({ userEmail: userEmail });
-    if (isAlreadySaved == null) {
-        
-    } else {
-        
-    }
-    
-    const deletedTokenResponse = deleteRefreshToken(userEmail);
-    console.log('Deleted refresh token');
-    console.log(deletedToken);
-    if (deletedToken === false){
-        
-    }
-    */
+
 }
 
 function deleteRefreshToken(userEmail){
