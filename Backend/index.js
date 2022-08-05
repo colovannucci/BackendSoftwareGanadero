@@ -13,20 +13,20 @@ const PORT = process.env.PORT || 3001;
 // Returns middleware that only parses json and only looks at requests where the Content-Type header matches the type option.
 app.use(express.json());
 
-const v1ProductRouter = require("./APIv1/Routes/product_routes");
+const v1ProductRouter = require("./Routes/product_routes");
 app.use("/api/v1/products", v1ProductRouter);
 
-const v1UserRouter = require("./APIv1/Routes/user_routes");
+const v1UserRouter = require("./Routes/user_routes");
 app.use("/api/v1/users", v1UserRouter);
 
-const v1AuthorizationRouter = require("./APIv1/Routes/authorization_routes");
+const v1AuthorizationRouter = require("./Routes/authorization_routes");
 app.use("/api/v1/auth", v1AuthorizationRouter);
 
-const v1AccessTokenRouter = require("./APIv1/Routes/access_token_routes");
+const v1AccessTokenRouter = require("./Routes/access_token_routes");
 app.use("/api/v1/accesstokens", v1AccessTokenRouter);
 
 /*
-const v1TestRouter = require("./APIv1/Routes/test_routes");
+const v1TestRouter = require(".//Routes/test_routes");
 app.use("/api/v1/test", v1TestRouter);
 */
 
