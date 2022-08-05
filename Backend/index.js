@@ -4,11 +4,30 @@
 // Require dotenv for environment variables
 require('dotenv').config();
 
+var cors = require('cors')
+
 const mongoose = require('mongoose');
 const express = require("express");
 
+const whiteList = [process.env.ORIGIN1, process.env.ORIGIN2];
+
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+app.use(
+  cors({
+      origin: function (origin, callback) {
+          console.log("😲😲😲 =>", origin);
+          if (!origin || whiteList.includes(origin)) {
+              return callback(null, origin);
+          }
+          return callback(
+              "Error de CORS origin: " + origin + " No autorizado!"
+          );
+      },
+      credentials: true,
+  })
+);
 
 // Returns middleware that only parses json and only looks at requests where the Content-Type header matches the type option.
 app.use(express.json());
