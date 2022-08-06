@@ -17,6 +17,7 @@ const PORT = process.env.PORT || 3001;
 
 // CORS
 app.use(cors({ origin: '*' }));
+app.use(cors({ methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH'] }));
 
 // Returns middleware that only parses json and only looks at requests where the Content-Type header matches the type option.
 app.use(express.json());
