@@ -18,6 +18,7 @@ const PORT = process.env.PORT || 3001;
 // CORS
 app.use(cors({ origin: '*' }));
 app.use(cors({ methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH'] }));
+//res.setHeader("Access-Control-Allow-Origin",  "*")  //sets the allow use to all requests html header
 
 // Returns middleware that only parses json and only looks at requests where the Content-Type header matches the type option.
 app.use(express.json());
@@ -34,10 +35,10 @@ app.use("/api/v1/auth", v1AuthorizationRouter);
 const v1AccessTokenRouter = require("./Routes/access_token_routes");
 app.use("/api/v1/accesstokens", v1AccessTokenRouter);
 
-/*
+
 const v1TestRouter = require(".//Routes/test_routes");
 app.use("/api/v1/test", v1TestRouter);
-*/
+
 
 // If any route matches, request fails and send this
 app.use('*', (req, res) => {
