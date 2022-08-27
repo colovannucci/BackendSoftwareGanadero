@@ -84,7 +84,7 @@ async function signUp (req, res) {
 async function signIn(req, res){
 
     // CORS requests
-    res.setHeader("Access-Control-Allow-Origin",  "*")  //sets the allow use to all requests html header
+    //res.setHeader("Access-Control-Allow-Origin",  "*")  //sets the allow use to all requests html header
 
     // Collect body fields
     const { body } = req;

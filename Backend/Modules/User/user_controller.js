@@ -34,8 +34,6 @@ function updateUser (req, res) {
     ) {
         return res.status(400).send({ message: 'Prohibited fields added' });
     }
-    // Check if category is valid
-    if (dataToUpdate.category && !(validCategories.includes(dataToUpdate.category))) return res.status(404).send({ message: 'Invalid category' });
 
     // Modify field updatedAt
     dataToUpdate.updatedAt = Date().toLocaleString("en-US", { timezone: "UTC" });

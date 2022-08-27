@@ -6,7 +6,7 @@ const userAPIRouter = express.Router();
 const userController = require("../Modules/User/user_controller");
 
 // Protect all the routes with an auth middleware.
-const authenticationMiddleware = require('../Middlewares/authentication_middleware');
+const authenticationMiddleware = require('../Middlewares/authenticationMiddleware');
 userAPIRouter.use(authenticationMiddleware);
 
 userAPIRouter
