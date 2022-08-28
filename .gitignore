@@ -1,5 +1,5 @@
 node_modules
 .env
 testPetition.rest
-testREST.rest
 applicationTest.rest
+test.rest
