@@ -3,16 +3,15 @@
 
 const express = require("express");
 const userAPIRouter = express.Router();
-const userController = require("../Modules/User/user_controller");
+const userController = require("../Controllers/userController");
 
 // Protect all the routes with an auth middleware.
 const authenticationMiddleware = require('../Middlewares/authenticationMiddleware');
 userAPIRouter.use(authenticationMiddleware);
 
 userAPIRouter
-  .get("/one/:email", userController.getUser)
+  .get("/:email", userController.getUser)
   .patch("/update/:email", userController.updateUser)
   .delete("/delete/:email", userController.deleteUser)
-  .delete("/signout/:email", userController.signOut);
 
 module.exports = userAPIRouter;

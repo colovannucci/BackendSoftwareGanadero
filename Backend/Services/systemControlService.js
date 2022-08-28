@@ -74,7 +74,7 @@ const signIn = async (userCredentials) => {
         return httpMsgHandler.code400("Invalid username or password");
     }
 
-    // Generate new tokens 
+    // Generate new access token 
     const accessTokenGenerated = accessTokenHandler.signAccessToken(userFound);
     if (!accessTokenGenerated) {
         return httpMsgHandler.code500('Error generating access token', accessTokenGenerated.message);
@@ -86,7 +86,7 @@ const signIn = async (userCredentials) => {
         return httpMsgHandler.code500('Error getting refresh token', refreshTokenFound.message);
     }
     if (refreshTokenFound) {
-        return httpMsgHandler.code400("User refresh token found. The user has another session active yet");
+        return httpMsgHandler.code400("The user has another session active yet. Please sign out and try again");
     }
     // Save refresh token in database
     const refreshTokenSaved = await refreshTokenDAL.createRefreshToken(userFound);
@@ -116,7 +116,7 @@ const signOut = async (userEmail) => {
         return httpMsgHandler.code500('Error getting user', userFound.message);
     }
     if (!userFound) {
-        return httpMsgHandler.code400("User not found");
+        return httpMsgHandler.code404("User not found");
     }
 
     // Delete user refresh token in database
@@ -150,7 +150,7 @@ const generateNewAccessToken = async (userData) => {
         return httpMsgHandler.code500('Error getting user', userFound.message);
     }
     if (!userFound) {
-        return httpMsgHandler.code400("User not found");
+        return httpMsgHandler.code404("User not found");
     }
 
     // Verify refresh token in database
@@ -159,9 +159,8 @@ const generateNewAccessToken = async (userData) => {
         return httpMsgHandler.code500('Error getting refresh token', refreshTokenFound.message);
     }
     if (!refreshTokenFound) {
-        return httpMsgHandler.code400("Refresh token not found");
+        return httpMsgHandler.code404("Refresh token not found");
     }
-
     // Check if refresh token is valid
     const isRefreshTokenValid = refreshTokenHandler.verifyRefreshToken(userData.refreshtoken);
     if (isRefreshTokenValid instanceof Error) {

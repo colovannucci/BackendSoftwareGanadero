@@ -36,7 +36,7 @@ Content-Type: application/json
 }
 ###
 ### DELETE-Delete user
-DELETE http://localhost:4001/test/users/delete/test@test.com
+DELETE http://localhost:4001/test/users/delete/test1@test.com
 Content-Type: application/json
 ###
 
@@ -100,9 +100,9 @@ Content-Type: application/json
 ###
 ### POST-Sign out user
 POST http://localhost:4001/test/system/signout/test1@test.com
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoidGVzdDFAdGVzdC5jb20iLCJuYW1lIjoidGVzdCBuYW1lIiwic3VybmFtZSI6InRlc3QgbmFtZSIsImJpcnRoRGF0ZSI6IjIwMDEtMDEtMDEiLCJwaG9uZSI6InRlc3QgcGhvbmUiLCJjb3VudHJ5IjoiVXJ1Z3VheSJ9LCJpYXQiOjE2NjEzMDI4NjMsImV4cCI6MTY2MTMwMjg5M30._5RkCDl5FsNUyEGyoTvNhEKs8ZJAXySvFUxdSwI09Ro
-
 Content-Type: application/json
+Authorization: Bearer tokenValue
+
 ###
 
 ### POST-Generate New Access Token
@@ -111,7 +111,7 @@ Content-Type: application/json
 
 {
   "email": "test1@test.com",
-  "refreshtoken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoidGVzdDFAdGVzdC5jb20iLCJuYW1lIjoidGVzdCBuYW1lIiwic3VybmFtZSI6InRlc3QgbmFtZSIsImJpcnRoRGF0ZSI6IjIwMDEtMDEtMDEiLCJwaG9uZSI6InRlc3QgcGhvbmUiLCJjb3VudHJ5IjoiVXJ1Z3VheSJ9LCJpYXQiOjE2NjEzMDI4MTAsImV4cCI6MTY2Mzg5NDgxMH0.1i5SIN5FnlNGznhsE8b0eXEE_XriRhHF7oF0JK5l5wA"
+  "refreshtoken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoidGVzdDFAdGVzdC5jb20iLCJuYW1lIjoidGVzdCBuYW1lIiwic3VybmFtZSI6InRlc3QgbmFtZSIsImJpcnRoRGF0ZSI6IjIwMDEtMDEtMDEiLCJwaG9uZSI6InRlc3QgcGhvbmUiLCJjb3VudHJ5IjoiVXJ1Z3VheSJ9LCJpYXQiOjE2NjE2MzY5OTIsImV4cCI6MTY2NDIyODk5Mn0.Ag0Bg4rDJw1cNl-IZxYviMPuxwp7xovOU_CBSyO5Jt8"
 }
 ###
 

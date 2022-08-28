@@ -13,26 +13,16 @@ app.use(cors({ origin: '*', methods: ['GET','POST', 'PATCH', 'DELETE']}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-
-// Check if DB is connected with a middleware.
-const dbConnectedMiddleware = require('./Middlewares/dbConnectionMiddleware');
-app.use(dbConnectedMiddleware);
-
+// Protect the routes with an auth middleware.
+const dbConnectionMiddleware = require('../Middlewares/dbConnectionMiddleware');
+app.use(dbConnectionMiddleware);
 
 // Application routes
-const v1ProductRouter = require("./Routes/product_routes");
-app.use("/api/v1/products", v1ProductRouter);
-
-const v1UserRouter = require("./Routes/user_routes");
+const v1UserRouter = require("./Routes/userRoutes");
 app.use("/api/v1/users", v1UserRouter);
 
-const v1AuthorizationRouter = require("./Routes/authorization_routes");
-app.use("/api/v1/auth", v1AuthorizationRouter);
-
-const v1AccessTokenRouter = require("./Routes/access_token_routes");
-app.use("/api/v1/accesstokens", v1AccessTokenRouter);
-
-
+const v1SystemRouter = require("./Routes/systemRoutes");
+app.use("/api/v1/systems", v1SystemRouter);
 
 // If any route matches, request fails and send this
 app.use('*', (req, res) => {

@@ -6,6 +6,8 @@ const httpMsgHandler = require('../Helpers/handleHttpMessage');
 // Require user validator fields
 const userValidator = require('../Validators/userValidator');
 // Create an instance of User Schema
+const refreshTokenDAL = require('../DataAccess/refreshTokenDAL');
+// Create an instance of User Schema
 const userDAL = require('../DataAccess/userDAL');
 
 
@@ -33,7 +35,7 @@ const getUser = async (userEmail) => {
         return httpMsgHandler.code500('Error getting user', userFound.message);
     }
     if (!userFound) {
-        return httpMsgHandler.code400("User not found");
+        return httpMsgHandler.code404("User not found");
     }
     return httpMsgHandler.code200(userFound);
 }
@@ -87,7 +89,7 @@ const updateUser = async (userEmail, userData) => {
         return httpMsgHandler.code500('Error getting user', userExists.message);
     }
     if (!userExists) {
-        return httpMsgHandler.code400("User doesn't exists");
+        return httpMsgHandler.code404("User doesn't exists");
     }
 
     // Check if body has only valid fields
@@ -120,7 +122,13 @@ const deleteUser = async (userEmail) => {
         return httpMsgHandler.code500('Error getting user', userExists.message);
     }
     if (!userExists) {
-        return httpMsgHandler.code400("User doesn't exists");
+        return httpMsgHandler.code404("User doesn't exists");
+    }
+
+    // Delete RefreshToken in database
+    const refreshTokenDeleted = await refreshTokenDAL.deleteRefreshToken(userEmail);
+    if (refreshTokenDeleted instanceof Error) {
+        return httpMsgHandler.code500('Error deleting RefreshToken', refreshTokenDeleted.message);
     }
 
     // Delete user in database
