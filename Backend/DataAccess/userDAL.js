@@ -3,10 +3,10 @@
 
 // Use "uuid" library to generate unique IDs
 const { v4: uuid } = require("uuid");
-
+// Require handler moment dates
+const dateHandler = require('../Helpers/handleDate');
 // Require handler bcrypt password
 const pswHandler = require('../Helpers/handlePassword');
-
 // Use MongoDB User Schema
 const UserModelDB = require('../Models/userModel');
 
@@ -55,8 +55,8 @@ const createUser = async (userData) => {
       newUser.country = userData.country;
     }
     newUser.createdId = uuid();
-    newUser.createdAt = Date().toLocaleString("en-US", { timezone: "UTC" });
-    newUser.updatedAt = Date().toLocaleString("en-US", { timezone: "UTC" });
+    newUser.createdAt = dateHandler.getStrDateNow();//Date().toLocaleString("en-US", { timezone: "UTC" });
+    newUser.updatedAt = dateHandler.getStrDateNow();//Date().toLocaleString("en-US", { timezone: "UTC" });
 
     // Save new user in database
     try {
@@ -71,9 +71,23 @@ const createUser = async (userData) => {
 }
 
 const updateUser = async (userEmail, userData) => {
-    // Modify field updatedAt
-    userData.updatedAt = Date().toLocaleString("en-US", { timezone: "UTC" });
+    //////////////////////////////////////////////////////
+    // PENDING - QUITAR CUANDO SE AGREGUE FUNCIONALIDAD
+    /*
+    if (userData.email){
+        // Actualizar quizas en token y demas cosas relacionadas 
+    }
+    */
+    // PENDING - QUITAR CUANDO SE AGREGUE FUNCIONALIDAD
+    //////////////////////////////////////////////////////
 
+    // Check if the user wants to update his password
+    if (userData.password){
+        // Encrypt password
+        userData.password = await pswHandler.encrypt(userData.password);
+    }
+    // Add field updatedAt
+    userData.updatedAt = dateHandler.getStrDateNow();//Date().toLocaleString("en-US", { timezone: "UTC" });
     // Update user in database
     try {
         await UserModelDB.updateOne({ email: userEmail }, userData);
@@ -109,8 +123,9 @@ const getUserPassword = async (userEmail) => {
 }
 
 const updateLoginTime = async (userEmail) => {
+    // Create the last login time
+    const loginTime = dateHandler.getStrDateNow();//Date().toLocaleString("en-US", { timezone: "UTC" });
     // Update the last login time in database
-    const loginTime = Date().toLocaleString("en-US", { timezone: "UTC" });
     try {
         await UserModelDB.updateOne({ email: userEmail }, { lastLogin: loginTime });
         return true;
@@ -121,8 +136,9 @@ const updateLoginTime = async (userEmail) => {
 }
 
 const updateLogoutTime = async (userEmail) => {
+    // Create the last logout time
+    const logoutTime = dateHandler.getStrDateNow();//Date().toLocaleString("en-US", { timezone: "UTC" });
     // Update the last logout time in database
-    const logoutTime = Date().toLocaleString("en-US", { timezone: "UTC" });
     try {
         await UserModelDB.updateOne({ email: userEmail }, { lastLogout: logoutTime });
         return true;

@@ -31,7 +31,7 @@ const getRefreshToken = async (userEmail) => {
         return httpMsgHandler.code500('Error getting refresh Token', refreshTokenFound.message);
     }
     if (!refreshTokenFound) {
-        return httpMsgHandler.code400("Refresh Token not found");
+        return httpMsgHandler.code404("Refresh Token not found");
     }
     return httpMsgHandler.code200(refreshTokenFound);
 }
@@ -70,7 +70,7 @@ const deleteRefreshToken = async (userEmail) => {
         return httpMsgHandler.code500('Error getting RefreshToken', refreshTokenExists.message);
     }
     if (!refreshTokenExists) {
-        return httpMsgHandler.code400("RefreshToken doesn't exists");
+        return httpMsgHandler.code404("RefreshToken doesn't exists");
     }
 
     // Delete RefreshToken in database

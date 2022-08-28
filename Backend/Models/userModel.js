@@ -13,10 +13,10 @@ const UserSchema = new Schema({
     country: { type: String, required: true },
     password: { type: String, required: true, select: false }, // "select: false" to avoid showing the password in the JSON response
     createdId: { type: String, select: false },
-    createdAt: { type: Date, select: false },
-    updatedAt: { type: Date, select: false },
-    lastLogin: { type: Date, select: false },
-    lastLogout: { type: Date, select: false }
+    createdAt: { type: String, select: false },
+    updatedAt: { type: String, select: false },
+    lastLogin: { type: String, select: false },
+    lastLogout: { type: String, select: false }
 });
 
 module.exports = mongoose.model('User', UserSchema);

@@ -8,8 +8,8 @@ const RefreshTokenSchema = new Schema({
     email: { type: String, unique: true, required: true, lowercase: true }, // "lowercase: true" to make email lowercase
     refreshToken: { type: String, unique: true, required: true },
     createdId: { type: String, select: false },
-    createdAt: { type: Date, select: false },
-    expiresAt: { type: Date }
+    createdAt: { type: String, select: false },
+    expiresAt: { type: String }
 });
 
 module.exports = mongoose.model('RefreshToken', RefreshTokenSchema);

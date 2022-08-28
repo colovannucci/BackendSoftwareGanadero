@@ -5,8 +5,8 @@
 const { v4: uuid } = require("uuid");
 // Require handler for refresh token
 const refreshTokenHandler = require('../Helpers/handleRefreshToken');
-// User moment library to manage dates
-const moment = require('moment');
+// Require handler moment dates
+const dateHandler = require('../Helpers/handleDate');
 // Use MongoDB RefreshToken Schema
 const RefreshTokenModelDB = require('../Models/refreshTokenModel');
 
@@ -42,8 +42,8 @@ const createRefreshToken = async (userData) => {
     newRefreshToken.email = userData.email;
     newRefreshToken.refreshToken = refreshTokenHandler.signRefreshToken(userData);
     newRefreshToken.createdId = uuid();
-    newRefreshToken.createdAt = Date().toLocaleString("en-US", { timezone: "UTC" });
-    newRefreshToken.expiresAt = moment().add(30, 'days').unix();
+    newRefreshToken.createdAt = dateHandler.getStrDateNow();//Date().toLocaleString("en-US", { timezone: "UTC" });
+    newRefreshToken.expiresAt = dateHandler.addDaysDateNow(30);//.unix();
 
     // Save new RefreshToken in database
     try {

@@ -29,18 +29,16 @@ const hasProhibitedFields = async (userData) => {
 }
 
 const hasValidFields = async (userData) => {
-    // Check if body has only valid fields
-    if (
-        userData.email ||
-        userData.password ||
-        userData.name ||
-        userData.surname ||
-        userData.phone ||
-        userData.birthDate
-    ) {
-        return true;
-    }
-    return false;
+    // Specify valid fields
+    const validFields = ["email", "password", "name", "surname", "phone", "birthDate" ];
+    // Collect all body fields
+    Object.keys(userData).forEach(fieldName => {
+        // Check if body has not valid fields
+        if(!validFields.includes(fieldName)){
+            return false;
+        }
+    });
+    return true;
 }
 
 const hasCredentials = async (userCredentials) => {
