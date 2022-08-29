@@ -16,29 +16,18 @@ const hasRequiredFields = async (userData) => {
     return false;
 }
 
-const hasProhibitedFields = async (userData) => {
-    // Check if body has prohibited fields: cretedId, createdAt and updatedAt
-    if (
-        userData.createdId ||
-        userData.createdAt ||
-        userData.updatedAt
-    ) {
-        return true;
-    }
-    return false;
-}
-
 const hasValidFields = async (userData) => {
     // Specify valid fields
     const validFields = ["email", "password", "name", "surname", "phone", "birthDate" ];
+    let isValid= true;
     // Collect all body fields
     Object.keys(userData).forEach(fieldName => {
         // Check if body has not valid fields
         if(!validFields.includes(fieldName)){
-            return false;
+            isValid = false;
         }
     });
-    return true;
+    return isValid;
 }
 
 const hasCredentials = async (userCredentials) => {
@@ -54,7 +43,6 @@ const hasCredentials = async (userCredentials) => {
 
 module.exports = {
     hasRequiredFields,
-    hasProhibitedFields,
     hasValidFields,
     hasCredentials
 }

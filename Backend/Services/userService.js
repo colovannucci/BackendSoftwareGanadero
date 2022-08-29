@@ -47,10 +47,10 @@ const createUser = async (userData) => {
     if (!hasRequiredFields) {
         return httpMsgHandler.code400("Missing fields on body");
     }
-    // Check if body has prohibited fields: cretedId, createdAt and updatedAt
-    const hasProhibitedFields = await userValidator.hasProhibitedFields(userData);
-    if (hasProhibitedFields) {
-        return httpMsgHandler.code400("Prohibited fields added on body");
+    // Check if body has only valid fields
+    const hasValidFields = await userValidator.hasValidFields(userData);
+    if (!hasValidFields) {
+        return httpMsgHandler.code400("Invalid fields added on body");
     }
 
     // Check if user email exists in database
@@ -95,12 +95,7 @@ const updateUser = async (userEmail, userData) => {
     // Check if body has only valid fields
     const hasValidFields = await userValidator.hasValidFields(userData);
     if (!hasValidFields) {
-        return httpMsgHandler.code400("Invalid fields on body");
-    }
-    // Check if body has prohibited fields: cretedId, createdAt and updatedAt
-    const hasProhibitedFields = await userValidator.hasProhibitedFields(userData);
-    if (hasProhibitedFields) {
-        return httpMsgHandler.code400("Prohibited fields added on body");
+        return httpMsgHandler.code400("Invalid fields added on body");
     }
     
     // Update user in database
