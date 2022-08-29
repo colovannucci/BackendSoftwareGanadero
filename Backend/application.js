@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Protect the routes with an auth middleware.
-const dbConnectionMiddleware = require('../Middlewares/dbConnectionMiddleware');
+const dbConnectionMiddleware = require('./Middlewares/dbConnectionMiddleware');
 app.use(dbConnectionMiddleware);
 
 // Application routes

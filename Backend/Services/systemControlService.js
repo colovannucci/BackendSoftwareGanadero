@@ -23,10 +23,10 @@ const signUp = async (userData) => {
     if (!hasRequiredFields) {
         return httpMsgHandler.code400("Missing fields on body");
     }
-    // Check if body has prohibited fields: cretedId, createdAt and updatedAt
-    const hasProhibitedFields = await userValidator.hasProhibitedFields(userData);
-    if (hasProhibitedFields) {
-        return httpMsgHandler.code400("Prohibited fields added on body");
+    // Check if body has only valid fields
+    const hasValidFields = await userValidator.hasValidFields(userData);
+    if (!hasValidFields) {
+        return httpMsgHandler.code400("Invalid fields added on body");
     }
 
     // Check if user email exists in database
@@ -140,7 +140,7 @@ const generateNewAccessToken = async (userData) => {
         return httpMsgHandler.code400("User email was not provided");
     }
     // Check if user refresh token was provided
-    if (!userData.refreshtoken){
+    if (!userData.refreshToken){
         return httpMsgHandler.code400("Refresh token was not provided");
     }
 
@@ -154,7 +154,7 @@ const generateNewAccessToken = async (userData) => {
     }
 
     // Verify refresh token in database
-    const refreshTokenFound = await refreshTokenDAL.getRefreshToken(userData.email);
+    const refreshTokenFound = await refreshTokenDAL.getRefreshToken(userData.refreshToken);
     if (refreshTokenFound instanceof Error) {
         return httpMsgHandler.code500('Error getting refresh token', refreshTokenFound.message);
     }

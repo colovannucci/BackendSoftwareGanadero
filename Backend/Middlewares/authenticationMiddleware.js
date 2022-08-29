@@ -28,8 +28,6 @@ function isAuthenticated( req, res, next){
     if (isTokenValid instanceof Error) {
         let http403 = httpMsgHandler.code403('Not authorized to access');
         return res.status(http403.code).send(http403);
-        //let http500 = httpMsgHandler.code500('Error verifying access token', isTokenValid.message);
-        //return res.status(http500.code).send(http500);
     }
     
     next();
