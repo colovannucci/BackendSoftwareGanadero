@@ -13,7 +13,7 @@ app.use(cors({ origin: '*', methods: ['GET','POST', 'PATCH', 'DELETE']}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Protect the routes with an auth middleware.
+// Protect the routes with an db connection middleware.
 const dbConnectionMiddleware = require('./Middlewares/dbConnectionMiddleware');
 app.use(dbConnectionMiddleware);
 

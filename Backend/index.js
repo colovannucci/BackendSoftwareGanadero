@@ -18,6 +18,6 @@ mongoose.connect(URI_MONGO, (err, res) => {
 });
 
 const app = require('./application');
-const PORT = process.env.PORT;// || 3001;
+const PORT = process.env.PORT;
 // Web server connection
 app.listen(PORT, () => { console.log(`Web server listening on port ${PORT}`) });
