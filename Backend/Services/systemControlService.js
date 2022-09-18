@@ -5,17 +5,18 @@
 const httpMsgHandler = require('../Helpers/handleHttpMessage');
 // Require handler bcrypt password
 const pswHandler = require('../Helpers/handlePassword');
-// Require handler for access token
-const accessTokenHandler = require('../Helpers/handleAccessToken');
 // Require handler for refresh token
 const refreshTokenHandler = require('../Helpers/handleRefreshToken');
+// Require handler for access token
+const accessTokenHandler = require('../Helpers/handleAccessToken');
 // Require user validator fields
 const userValidator = require('../Validators/userValidator');
-// Create an instance of User Schema
+// Create an instance of User data access layer
 const userDAL = require('../DataAccess/userDAL');
-// Create an instance of User Schema
+// Create an instance of RefreshToken data access layer
 const refreshTokenDAL = require('../DataAccess/refreshTokenDAL');
-
+// Create an instance of AccessToken data access layer
+const accessTokenDAL = require('../DataAccess/accessTokenDAL');
 
 const signUp = async (userData) => {
     // Check if body has all required fields
@@ -66,7 +67,7 @@ const signIn = async (userCredentials) => {
         return httpMsgHandler.code500('Error getting password', userPassword.message);
     }
     if (!userPassword) {
-        return httpMsgHandler.code404("Password not found");
+        return httpMsgHandler.code400("Invalid username or password");
     }
     // Check if user password is correct
     const isPswValid = pswHandler.compare(userCredentials.password, userPassword);
@@ -74,24 +75,38 @@ const signIn = async (userCredentials) => {
         return httpMsgHandler.code400("Invalid username or password");
     }
 
-    // Generate new access token 
-    const accessTokenGenerated = accessTokenHandler.signAccessToken(userFound);
-    if (!accessTokenGenerated) {
-        return httpMsgHandler.code500('Error generating access token', accessTokenGenerated.message);
-    }
-
     // Verify refresh token in database, if it exists indicate that the user has an active session
-    const refreshTokenFound = await refreshTokenDAL.getRefreshToken(userCredentials.email);
+    const refreshTokenFound = await refreshTokenDAL.getRefreshTokenByEmail(userCredentials.email);
     if (refreshTokenFound instanceof Error) {
         return httpMsgHandler.code500('Error getting refresh token', refreshTokenFound.message);
     }
     if (refreshTokenFound) {
-        return httpMsgHandler.code400("The user has another session active yet. Please sign out and try again");
+        return httpMsgHandler.code400("The user has another session with an active refresh token. Please sign out and try again");
     }
+    /////////////////////
+    // ACTUALIZAR ACCESS TOKEN ANTERIOR SI EXISTE --- verificar si sirve capas actualizar nomas
+    /////////////////////
     // Save refresh token in database
     const refreshTokenSaved = await refreshTokenDAL.createRefreshToken(userFound);
     if (refreshTokenSaved instanceof Error) {
-        return httpMsgHandler.code500('Error saving refresh token', refreshTokenSaved.message);
+        return httpMsgHandler.code500('Error saving Refresh token', refreshTokenSaved.message);
+    }
+
+    // Verify access token in database, if it exists indicate that the user has an active session
+    const accessTokenFound = await accessTokenDAL.getAccessTokenByEmail(userCredentials.email);
+    if (accessTokenFound instanceof Error) {
+        return httpMsgHandler.code500('Error getting Access token', accessTokenFound.message);
+    }
+    if (accessTokenFound) {
+        return httpMsgHandler.code400("The user has another session with an active access token. Please sign out and try again");
+    }
+    /////////////////////
+    // ACTUALIZA ACCESS TOKEN ANTERIOR SI EXISTE --- verificar si sirve capas actualizar nomas
+    /////////////////////
+    // Save access token in database
+    const accessTokenSaved = await accessTokenDAL.createAccessToken(userFound);
+    if (accessTokenSaved instanceof Error) {
+        return httpMsgHandler.code500('Error saving access token', accessTokenSaved.message);
     }
 
     // Update user with new login datetime in database
@@ -101,13 +116,13 @@ const signIn = async (userCredentials) => {
     }
 
     // Return user data with tokens
-    const userTokens = {accessToken: accessTokenGenerated, refreshToken: refreshTokenSaved}
+    const userTokens = {accessToken: accessTokenSaved, refreshToken: refreshTokenSaved}
     return httpMsgHandler.code200('User signed in successfully', userTokens);
 }
 
-const signOut = async (userEmail) => {
+const signOut = async (userData) => {
     // Check if user email was provided
-    if (!userEmail){
+    if (!userData.email){
         return httpMsgHandler.code400("User email was not provided");
     }
     // Search user in database
@@ -119,10 +134,20 @@ const signOut = async (userEmail) => {
         return httpMsgHandler.code404("User not found");
     }
 
+    /////////////////////
+    // VERIFICAR QUE ESTE EN BD
+    /////////////////////
+
     // Delete user refresh token in database
     const refreshTokenDeleted = refreshTokenDAL.deleteRefreshToken(userEmail);
     if (refreshTokenDeleted === false) {
         return httpMsgHandler.code500('Error deleting refresh token', refreshTokenDeleted.message);
+    }
+
+    // Delete user access token in database
+    const accessTokenDeleted = accessTokenDAL.deleteAccessToken(userEmail);
+    if (accessTokenDeleted === false) {
+        return httpMsgHandler.code500('Error deleting access token', accessTokenDeleted.message);
     }
 
     // Update user with new logout datetime in database
@@ -154,7 +179,7 @@ const generateNewAccessToken = async (userData) => {
     }
 
     // Verify refresh token in database
-    const refreshTokenFound = await refreshTokenDAL.getRefreshToken(userData.refreshToken);
+    const refreshTokenFound = await refreshTokenDAL.getRefreshToken(userData.email);
     if (refreshTokenFound instanceof Error) {
         return httpMsgHandler.code500('Error getting refresh token', refreshTokenFound.message);
     }
@@ -167,13 +192,17 @@ const generateNewAccessToken = async (userData) => {
         return httpMsgHandler.code400("Refresh token is not valid");
     }
 
-    // Generate new access token
-    const accessTokenGenerated = accessTokenHandler.signAccessToken(userFound);
-    if (!accessTokenGenerated) {
-        return httpMsgHandler.code500('Error generating new access token', accessTokenGenerated.message);
+    /////////////////////
+    // ELIMINAR ACCESS TOKEN ANTERIOR --- verificar si sirve capas actualizar nomas
+    /////////////////////
+
+    // Save new access token in database
+    const accessTokenSaved = await accessTokenDAL.createAccessToken(userFound);
+    if (accessTokenSaved instanceof Error) {
+        return httpMsgHandler.code500('Error saving access token', accessTokenSaved.message);
     }
 
-    return httpMsgHandler.code200('Access token generated successfully', accessTokenGenerated);
+    return httpMsgHandler.code200('Access token generated successfully', accessTokenSaved);
 }
 
 module.exports = {

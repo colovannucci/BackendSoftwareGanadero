@@ -3,32 +3,31 @@
 
 // Require handler http messages
 const httpMsgHandler = require('../Helpers/handleHttpMessage');
-// Create an instance of User Schema
+// Create an instance of Refresh Token data access layer
 const refreshTokenDAL = require('../DataAccess/refreshTokenDAL');
 
-
 const getAllRefreshTokens = async () => {
-
+    // Search all Refresh tokens in database
     const allRefreshTokens = await refreshTokenDAL.getAllRefreshTokens();
     if (allRefreshTokens instanceof Error) {
-        return httpMsgHandler.code500('Error getting Refresh Token', allUsers.message);
+        return httpMsgHandler.code500('Error getting Refresh Tokens', allRefreshTokens.message);
     }
     if (!allRefreshTokens) {
-        return httpMsgHandler.code404("Refresh Tokens doesn't found");
+        return httpMsgHandler.code404("Refresh Tokens does not found");
     }
 
     return httpMsgHandler.code200(allRefreshTokens);
 }
 
-const getRefreshToken = async (userEmail) => {
+const getRefreshTokenByEmail = async (userEmail) => {
     // Check if user email was provided
     if (!userEmail){
         return httpMsgHandler.code400("User email was not provided");
     }
-    // Search user in database
-    const refreshTokenFound = await refreshTokenDAL.getRefreshToken(userEmail);
+    // Search Refresh Token in database
+    const refreshTokenFound = await refreshTokenDAL.getRefreshTokenByEmail(userEmail);
     if (refreshTokenFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting refresh Token', refreshTokenFound.message);
+        return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenFound.message);
     }
     if (!refreshTokenFound) {
         return httpMsgHandler.code404("Refresh Token not found");
@@ -37,21 +36,21 @@ const getRefreshToken = async (userEmail) => {
 }
 
 const createRefreshToken = async (userData) => {
-
     // Check if body has all required fields
     if (!userData.email) {
         return httpMsgHandler.code400("Missing email on body");
     }
 
-    // Check if RefreshToken exists in database
-    const refreshTokenExists = await refreshTokenDAL.getRefreshToken(userData.email);
+    // Check if Refresh Token exists in database
+    const refreshTokenExists = await refreshTokenDAL.getRefreshTokenByEmail(userData.email);
     if (refreshTokenExists instanceof Error) {
-        return httpMsgHandler.code500('Error getting RefreshToken', refreshTokenExists.message);
+        return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenExists.message);
     }
     if (refreshTokenExists) {
-        return httpMsgHandler.code400("RefreshToken already exists");
+        return httpMsgHandler.code400("Refresh Token already exists");
     }
-    // Create RefreshToken in database
+
+    // Create Refresh Token in database
     const refreshTokenSaved = await refreshTokenDAL.createRefreshToken(userData);
     if (refreshTokenSaved instanceof Error) {
         return httpMsgHandler.code500('Error saving Refresh token', refreshTokenSaved.message);
@@ -59,31 +58,59 @@ const createRefreshToken = async (userData) => {
     return httpMsgHandler.code201('Refresh token created successfully', refreshTokenSaved);
 }
 
-const deleteRefreshToken = async (userEmail) => {
-    // Check if RefreshToken email was provided
+const updateRefreshToken = async (userEmail, tokenData) => {
+    // Check if user email was provided
     if (!userEmail){
         return httpMsgHandler.code400("User email was not provided");
     }
-    // Check if RefreshToken exists in database
-    const refreshTokenExists = await refreshTokenDAL.getRefreshToken(userEmail);
-    if (refreshTokenExists instanceof Error) {
-        return httpMsgHandler.code500('Error getting RefreshToken', refreshTokenExists.message);
-    }
-    if (!refreshTokenExists) {
-        return httpMsgHandler.code404("RefreshToken doesn't exists");
+    // Check if new tocken was provided
+    if (!tokenData.refreshToken){
+        return httpMsgHandler.code400("Refresh Token was not provided");
     }
 
-    // Delete RefreshToken in database
+    // Check if Refresh Token exists in database
+    const refreshTokenExists = await refreshTokenDAL.getRefreshTokenByEmail(userEmail);
+    if (refreshTokenExists instanceof Error) {
+        return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenExists.message);
+    }
+    if (!refreshTokenExists) {
+        return httpMsgHandler.code400("Refresh Token does not exist");
+    }
+    
+    // Update refresh token in database
+    const refreshTokenUpdated = await refreshTokenDAL.updateRefreshToken(userEmail, tokenData.refreshToken);
+    if (refreshTokenUpdated instanceof Error) {
+        return httpMsgHandler.code500('Error updating Refresh Token', refreshTokenUpdated.message);
+    }
+    return httpMsgHandler.code200('Refresh Token updated successfully');
+}
+
+const deleteRefreshToken = async (userEmail) => {
+    // Check if user email was provided
+    if (!userEmail){
+        return httpMsgHandler.code400("User email was not provided");
+    }
+    // Check if Refresh Token exists in database
+    const refreshTokenExists = await refreshTokenDAL.getRefreshToken(userEmail);
+    if (refreshTokenExists instanceof Error) {
+        return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenExists.message);
+    }
+    if (!refreshTokenExists) {
+        return httpMsgHandler.code404("Refresh Token doesn't exists");
+    }
+
+    // Delete Refresh Token in database
     const refreshTokenDeleted = await refreshTokenDAL.deleteRefreshToken(userEmail);
     if (refreshTokenDeleted instanceof Error) {
-        return httpMsgHandler.code500('Error deleting RefreshToken', refreshTokenDeleted.message);
+        return httpMsgHandler.code500('Error deleting Refresh Token', refreshTokenDeleted.message);
     }
-    return httpMsgHandler.code200('RefreshToken deleted successfully');
+    return httpMsgHandler.code200('Refresh Token deleted successfully');
 }
 
 module.exports = {
     getAllRefreshTokens,
-    getRefreshToken,
+    getRefreshTokenByEmail,
     createRefreshToken,
+    updateRefreshToken,
     deleteRefreshToken
 }

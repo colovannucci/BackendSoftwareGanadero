@@ -5,20 +5,22 @@
 const httpMsgHandler = require('../Helpers/handleHttpMessage');
 // Require user validator fields
 const userValidator = require('../Validators/userValidator');
-// Create an instance of User Schema
+// Create an instance of RefreshToken data access layer
 const refreshTokenDAL = require('../DataAccess/refreshTokenDAL');
-// Create an instance of User Schema
+// Create an instance of AccessToken data access layer
+const accessTokenDAL = require('../DataAccess/accessTokenDAL');
+// Create an instance of User data access layer
 const userDAL = require('../DataAccess/userDAL');
 
 
 const getAllUsers = async () => {
-
+    // Search all users in database
     const allUsers = await userDAL.getAllUsers();
     if (allUsers instanceof Error) {
         return httpMsgHandler.code500('Error getting users', allUsers.message);
     }
     if (!allUsers) {
-        return httpMsgHandler.code404("Users doesn't found");
+        return httpMsgHandler.code404("Users does not found");
     }
 
     return httpMsgHandler.code200(allUsers);
@@ -37,11 +39,10 @@ const getUser = async (userEmail) => {
     if (!userFound) {
         return httpMsgHandler.code404("User not found");
     }
-    return httpMsgHandler.code200(userFound);
+    return httpMsgHandler.code200("Users found", userFound);
 }
 
 const createUser = async (userData) => {
-
     // Check if body has all required fields
     const hasRequiredFields = await userValidator.hasRequiredFields(userData);
     if (!hasRequiredFields) {
@@ -71,14 +72,6 @@ const createUser = async (userData) => {
 }
 
 const updateUser = async (userEmail, userData) => {
-    //////////////////////////////////////////////////////
-    // PENDING - QUITAR CUANDO SE AGREGUE FUNCIONALIDAD
-    if (userData.email){
-        return httpMsgHandler.code400("User email cannot be updated yet... Functionality pending");
-    }
-    // PENDING - QUITAR CUANDO SE AGREGUE FUNCIONALIDAD
-    //////////////////////////////////////////////////////
-    
     // Check if user email was provided
     if (!userEmail){
         return httpMsgHandler.code400("User email was not provided");
@@ -89,9 +82,13 @@ const updateUser = async (userEmail, userData) => {
         return httpMsgHandler.code500('Error getting user', userExists.message);
     }
     if (!userExists) {
-        return httpMsgHandler.code404("User doesn't exists");
+        return httpMsgHandler.code404("User does not exist");
     }
 
+    // Check if the user is not trying to update the email address
+    if (userData.email){
+        return httpMsgHandler.code400("User email cannot be updated");
+    }
     // Check if body has only valid fields
     const hasValidFields = await userValidator.hasValidFields(userData);
     if (!hasValidFields) {
@@ -117,7 +114,7 @@ const deleteUser = async (userEmail) => {
         return httpMsgHandler.code500('Error getting user', userExists.message);
     }
     if (!userExists) {
-        return httpMsgHandler.code404("User doesn't exists");
+        return httpMsgHandler.code404("User does not exist");
     }
 
     // Delete RefreshToken in database
@@ -126,6 +123,12 @@ const deleteUser = async (userEmail) => {
         return httpMsgHandler.code500('Error deleting RefreshToken', refreshTokenDeleted.message);
     }
 
+    // Delete AccessToken in database
+    const accessTokenDeleted = await accessTokenDAL.deleteAccessToken(userEmail);
+    if (accessTokenDeleted instanceof Error) {
+        return httpMsgHandler.code500('Error deleting AccessToken', accessTokenDeleted.message);
+    }
+    
     // Delete user in database
     const userDeleted = await userDAL.deleteUser(userEmail);
     if (userDeleted instanceof Error) {

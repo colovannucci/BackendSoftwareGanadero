@@ -12,7 +12,12 @@ const addDaysDateNow = (daysQty) => {
     return moment().add(daysQty, 'days').format('DD/MM/YYYY HH:mm:ss');
 }
 
+const addHoursDateNow = (hoursQty) => {
+    return moment().add(hoursQty, 'hours').format('DD/MM/YYYY HH:mm:ss');
+}
+
 module.exports = {
     getStrDateNow,
-    addDaysDateNow
+    addDaysDateNow,
+    addHoursDateNow
 }

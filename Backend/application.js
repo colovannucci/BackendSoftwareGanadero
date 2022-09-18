@@ -19,10 +19,10 @@ app.use(dbConnectionMiddleware);
 
 // Application routes
 const v1UserRouter = require("./Routes/userRoutes");
-app.use("/api/v1/users", v1UserRouter);
+app.use("/api/v1/user", v1UserRouter);
 
 const v1SystemRouter = require("./Routes/systemRoutes");
-app.use("/api/v1/systems", v1SystemRouter);
+app.use("/api/v1/system", v1SystemRouter);
 
 // If any route matches, request fails and send this
 app.use('*', (req, res) => {

@@ -7,7 +7,7 @@ require('dotenv').config();
 // Require handler http messages
 const httpMessages = require('../Helpers/handleHttpMessage');
 
-function isConnected ( req, res, next){
+const isConnected = async (req, res, next) => {
     const dbConnected = process.env.DB_CONNECTED;
     if (dbConnected === "Y") {
         next();

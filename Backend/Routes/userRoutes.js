@@ -10,7 +10,7 @@ const authenticationMiddleware = require('../Middlewares/authenticationMiddlewar
 userAPIRouter.use(authenticationMiddleware);
 
 userAPIRouter
-  .get("/:email", userController.getUser)
+  .get("/get/:email", userController.getUser)
   .patch("/update/:email", userController.updateUser)
   .delete("/delete/:email", userController.deleteUser)
 

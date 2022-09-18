@@ -4,12 +4,8 @@
 // Create an instance of User Service
 const userServices = require('../Services/userService');
 
-const getAllUsers = async (req, res) => {
-    const allUsers = await userServices.getAllUsers();
-    res.status(allUsers.code).send(allUsers);
-}
-
 const getUser = async (req, res) => {
+    // Collect user email in request parameters
     const userEmail = req.params.email;
 
     const userFound = await userServices.getUser(userEmail);
@@ -25,8 +21,8 @@ const createUser = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
+    // Collect user email in request parameters
     const userEmail = req.params.email;
-
     // Collect body fields with user data
     const { body } = req;
 
@@ -42,23 +38,14 @@ const deleteUser = async (req, res) => {
 }
 
 const test = (req, res) => {
-    console.log('HOLA');
-    res.status(200).send('User Routes tested successfully');
-}
-
-const getUserPassword = async (req, res) => {
-    const email = req.params.email;
-
-    const userPassword = await userServices.getUserPassword(email);
-    res.status(userPassword.code).send(userPassword);
+    console.log('User Routes connected successfully');
+    res.status(200).send('User Routes connected successfully');
 }
 
 module.exports = {
     test,
-    getAllUsers,
     getUser,
     createUser,
     updateUser,
-    deleteUser,
-    getUserPassword
+    deleteUser
 }

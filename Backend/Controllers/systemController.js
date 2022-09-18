@@ -21,9 +21,10 @@ const signIn = async (req, res) => {
 }
 
 const signOut = async (req, res) => {
-    const userEmail = req.params.email;
+    // Collect body fields with user data
+    const { body } = req;
 
-    const signedOut = await systemControlServices.signOut(userEmail);
+    const signedOut = await systemControlServices.signOut(body);
     res.status(signedOut.code).send(signedOut);
 }
 
@@ -36,8 +37,8 @@ const generateNewAccessToken = async (req, res) => {
 }
 
 const test = (req, res) => {
-    console.log('HOLA');
-    res.status(200).send('System Routes tested successfully');
+    console.log('System Routes connected successfully');
+    res.status(200).send('System Routes connected successfully');
 }
 
 module.exports = {

@@ -9,10 +9,11 @@ const getAllRefreshTokens = async (req, res) => {
     res.status(allRefreshTokens.code).send(allRefreshTokens);
 }
 
-const getRefreshToken = async (req, res) => {
+const getRefreshTokenByEmail = async (req, res) => {
+    // Collect user email in request parameters
     const userEmail = req.params.email;
 
-    const refreshTokenFound = await refreshTokenServices.getRefreshToken(userEmail);
+    const refreshTokenFound = await refreshTokenServices.getRefreshTokenByEmail(userEmail);
     res.status(refreshTokenFound.code).send(refreshTokenFound);
 }
 
@@ -24,6 +25,16 @@ const createRefreshToken = async (req, res) => {
     res.status(refreshTokenSaved.code).send(refreshTokenSaved);
 }
 
+const updateRefreshToken = async (req, res) => {
+    // Collect user email in request parameters
+    const userEmail = req.params.email;
+    // Collect body fields with Refresh Token data
+    const { body } = req;
+
+    const refreshTokenUpdated = await refreshTokenServices.updateRefreshToken(userEmail, body);
+    res.status(refreshTokenUpdated.code).send(refreshTokenUpdated);
+}
+
 const deleteRefreshToken = async (req, res) => {
     const userEmail = req.params.email;
 
@@ -32,14 +43,15 @@ const deleteRefreshToken = async (req, res) => {
 }
 
 const test = (req, res) => {
-    console.log('HOLA');
-    res.status(200).send('Refresh token Routes tested successfully');
+    console.log('Refresh token Routes connected successfully');
+    res.status(200).send('Refresh token Routes connected successfully');
 }
 
 module.exports = {
     test,
     getAllRefreshTokens,
-    getRefreshToken,
+    getRefreshTokenByEmail,
     createRefreshToken,
+    updateRefreshToken,
     deleteRefreshToken
 }

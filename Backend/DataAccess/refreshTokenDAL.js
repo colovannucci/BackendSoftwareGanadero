@@ -23,9 +23,22 @@ const getAllRefreshTokens = async () => {
     }
 }
 
-const getRefreshToken = async (userEmail) => {
+const getRefreshTokenByEmail = async (userEmail) => {
     try {
         const refreshTokenFound = await RefreshTokenModelDB.findOne({ email: userEmail }).select("-_id -__v");
+        if (!refreshTokenFound) {
+            return null;
+        }
+        return refreshTokenFound;
+    } catch (err) {
+        console.log(`getRefreshTokenByEmail-Catch Error: ${err}`);
+        return new Error(err);
+    }
+}
+
+const getRefreshToken = async (token) => {
+    try {
+        const refreshTokenFound = await RefreshTokenModelDB.findOne({ refreshToken: token }).select("-_id -__v");
         if (!refreshTokenFound) {
             return null;
         }
@@ -42,8 +55,9 @@ const createRefreshToken = async (userData) => {
     newRefreshToken.email = userData.email;
     newRefreshToken.refreshToken = refreshTokenHandler.signRefreshToken(userData);
     newRefreshToken.createdId = uuid();
-    newRefreshToken.createdAt = dateHandler.getStrDateNow();//Date().toLocaleString("en-US", { timezone: "UTC" });
-    newRefreshToken.expiresAt = dateHandler.addDaysDateNow(30);//.unix();
+    newRefreshToken.createdAt = dateHandler.getStrDateNow();
+    newRefreshToken.updatedAt = dateHandler.getStrDateNow();
+    newRefreshToken.expiresAt = dateHandler.addDaysDateNow(30);
 
     // Save new RefreshToken in database
     try {
@@ -51,6 +65,24 @@ const createRefreshToken = async (userData) => {
         return newRefreshToken.refreshToken;
     } catch (err) {
         console.log(`createRefreshToken-Catch Error: ${err}`);
+        return new Error(err);
+    }
+}
+
+const updateRefreshToken = async (userEmail, newToken) => {
+    // Create a new object with data to update
+    const refeshTokenData = {
+        refreshToken: newToken,
+        updatedAt: dateHandler.getStrDateNow(),
+        expiresAt: dateHandler.addDaysDateNow(30)
+    };
+
+    // Update Refresh Token in database
+    try {
+        await RefreshTokenModelDB.updateOne({ email: userEmail }, refeshTokenData);
+        return true;
+    } catch (err) {
+        console.log(`updateRefreshToken-Catch Error: ${err}`);
         return new Error(err);
     }
 }
@@ -68,7 +100,9 @@ const deleteRefreshToken = async (userEmail) => {
 
 module.exports = {
     getAllRefreshTokens,
+    getRefreshTokenByEmail,
     getRefreshToken,
     createRefreshToken,
+    updateRefreshToken,
     deleteRefreshToken
 }

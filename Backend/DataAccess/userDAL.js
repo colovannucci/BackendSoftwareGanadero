@@ -55,8 +55,8 @@ const createUser = async (userData) => {
       newUser.country = userData.country;
     }
     newUser.createdId = uuid();
-    newUser.createdAt = dateHandler.getStrDateNow();//Date().toLocaleString("en-US", { timezone: "UTC" });
-    newUser.updatedAt = dateHandler.getStrDateNow();//Date().toLocaleString("en-US", { timezone: "UTC" });
+    newUser.createdAt = dateHandler.getStrDateNow();
+    newUser.updatedAt = dateHandler.getStrDateNow();
 
     // Save new user in database
     try {
@@ -71,23 +71,13 @@ const createUser = async (userData) => {
 }
 
 const updateUser = async (userEmail, userData) => {
-    //////////////////////////////////////////////////////
-    // PENDING - QUITAR CUANDO SE AGREGUE FUNCIONALIDAD
-    /*
-    if (userData.email){
-        // Actualizar quizas en token y demas cosas relacionadas 
-    }
-    */
-    // PENDING - QUITAR CUANDO SE AGREGUE FUNCIONALIDAD
-    //////////////////////////////////////////////////////
-
     // Check if the user wants to update his password
     if (userData.password){
         // Encrypt password
         userData.password = await pswHandler.encrypt(userData.password);
     }
     // Add field updatedAt
-    userData.updatedAt = dateHandler.getStrDateNow();//Date().toLocaleString("en-US", { timezone: "UTC" });
+    userData.updatedAt = dateHandler.getStrDateNow();
     // Update user in database
     try {
         await UserModelDB.updateOne({ email: userEmail }, userData);

@@ -5,8 +5,8 @@
 require('dotenv').config();
 
 const mongoose = require('mongoose');
-const URI_MONGO = process.env.MONGO_DB_URI;// || 'mongodb://localhost:27017/testUsers';
-
+//const URI_MONGO = "mongodb://localhost:27017/Test";
+const URI_MONGO = process.env.MONGO_DB_URI;
 // MondoDB connection
 mongoose.connect(URI_MONGO, (err, res) => {
   if (err) {

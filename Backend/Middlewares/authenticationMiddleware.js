@@ -8,8 +8,10 @@ const jwt = require('jsonwebtoken')
 const httpMsgHandler = require('../Helpers/handleHttpMessage');
 // Require handler access token
 const accessTokenHandler = require('../Helpers/handleAccessToken');
+// Create an instance of AccessToken data access layer
+const accessTokenDAL = require('../DataAccess/accessTokenDAL');
 
-function isAuthenticated( req, res, next){
+async function isAuthenticated( req, res, next){
     const authHeader = req.headers['authorization']
     
     if (!authHeader) {
@@ -24,13 +26,25 @@ function isAuthenticated( req, res, next){
         return res.status(http400.code).send(http400);
     }
 
-    const isTokenValid = accessTokenHandler.verifyAccessToken(userToken);
-    if (isTokenValid instanceof Error) {
-        let http403 = httpMsgHandler.code403('Not authorized to access');
-        return res.status(http403.code).send(http403);
+    // Verify access token in database, if it exists indicate that the user has an active session
+    const accessTokenFound = await accessTokenDAL.getAccessToken(userToken);
+    if (accessTokenFound instanceof Error) {
+        let http500 = httpMsgHandler.code500('Error getting Access token', accessTokenFound.message);
+        return res.status(http500.code).send(http500);
     }
-    
-    next();
+    if (accessTokenFound) {
+        // Check if access token is valid
+        const isTokenValid = accessTokenHandler.verifyAccessToken(userToken);
+        if (isTokenValid instanceof Error) {
+            let http403 = httpMsgHandler.code403('Not authorized to access');
+            return res.status(http403.code).send(http403);
+        }
+        // Middleware passed successfully
+        next();
+    } else{
+        let http404 = httpMsgHandler.code404('Access Token not found');
+        return res.status(http404.code).send(http404);
+    }
 }
 
 module.exports = isAuthenticated;
