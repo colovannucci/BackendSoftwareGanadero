@@ -11,7 +11,7 @@ const authenticationMiddleware = require('../Middlewares/authenticationMiddlewar
 systemAPIRouter
     .post('/signup', systemController.signUp)
     .post('/signin', systemController.signIn)
-    .post('/signout/:email', authenticationMiddleware, systemController.signOut)
+    .post('/signout/', authenticationMiddleware, systemController.signOut)
     .post('/generatenewaccesstoken', systemController.generateNewAccessToken);
 
 module.exports = systemAPIRouter;

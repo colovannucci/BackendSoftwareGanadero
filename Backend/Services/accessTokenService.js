@@ -59,18 +59,18 @@ const createAccessToken = async (userData) => {
     return httpMsgHandler.code201('Access token created successfully', accessTokenSaved);
 }
 
-const updateAccessToken = async (userEmail, tokenData) => {
+const updateAccessToken = async (userData) => {
     // Check if user email was provided
-    if (!userEmail){
+    if (!userData.email){
         return httpMsgHandler.code400("User email was not provided");
     }
     // Check if new tocken was provided
-    if (!tokenData.accessToken){
+    if (!userData.accessToken){
         return httpMsgHandler.code400("Access Token was not provided");
     }
 
     // Check if Refresh Token exists in database
-    const accessTokenExists = await accessTokenDAL.getAccessTokenByEmail(userEmail);
+    const accessTokenExists = await accessTokenDAL.getAccessTokenByEmail(userData.email);
     if (accessTokenExists instanceof Error) {
         return httpMsgHandler.code500('Error getting Access Token', accessTokenExists.message);
     }
@@ -79,7 +79,7 @@ const updateAccessToken = async (userEmail, tokenData) => {
     }
     
     // Update refresh token in database
-    const accessTokenUpdated = await refreshTokenDAL.updateAccessToken(userEmail, tokenData.accessToken);
+    const accessTokenUpdated = await refreshTokenDAL.updateAccessToken(userData);
     if (accessTokenUpdated instanceof Error) {
         return httpMsgHandler.code500('Error updating Access Token', accessTokenUpdated.message);
     }

@@ -29,7 +29,7 @@ const getRefreshTokenByEmail = async (userEmail) => {
         if (!refreshTokenFound) {
             return null;
         }
-        return refreshTokenFound;
+        return refreshTokenFound.refreshToken;
     } catch (err) {
         console.log(`getRefreshTokenByEmail-Catch Error: ${err}`);
         return new Error(err);
@@ -42,7 +42,7 @@ const getRefreshToken = async (token) => {
         if (!refreshTokenFound) {
             return null;
         }
-        return refreshTokenFound;
+        return refreshTokenFound.refreshToken;
     } catch (err) {
         console.log(`getRefreshToken-Catch Error: ${err}`);
         return new Error(err);
@@ -69,18 +69,18 @@ const createRefreshToken = async (userData) => {
     }
 }
 
-const updateRefreshToken = async (userEmail, newToken) => {
+const updateRefreshToken = async (userData) => {
     // Create a new object with data to update
     const refeshTokenData = {
-        refreshToken: newToken,
+        refreshToken: refreshTokenHandler.signRefreshToken(userData),
         updatedAt: dateHandler.getStrDateNow(),
         expiresAt: dateHandler.addDaysDateNow(30)
     };
 
     // Update Refresh Token in database
     try {
-        await RefreshTokenModelDB.updateOne({ email: userEmail }, refeshTokenData);
-        return true;
+        await RefreshTokenModelDB.updateOne({ email: userData.email }, refeshTokenData);
+        return refeshTokenData.refreshToken;
     } catch (err) {
         console.log(`updateRefreshToken-Catch Error: ${err}`);
         return new Error(err);

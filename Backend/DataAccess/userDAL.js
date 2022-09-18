@@ -114,7 +114,7 @@ const getUserPassword = async (userEmail) => {
 
 const updateLoginTime = async (userEmail) => {
     // Create the last login time
-    const loginTime = dateHandler.getStrDateNow();//Date().toLocaleString("en-US", { timezone: "UTC" });
+    const loginTime = dateHandler.getStrDateNow();
     // Update the last login time in database
     try {
         await UserModelDB.updateOne({ email: userEmail }, { lastLogin: loginTime });
@@ -127,7 +127,7 @@ const updateLoginTime = async (userEmail) => {
 
 const updateLogoutTime = async (userEmail) => {
     // Create the last logout time
-    const logoutTime = dateHandler.getStrDateNow();//Date().toLocaleString("en-US", { timezone: "UTC" });
+    const logoutTime = dateHandler.getStrDateNow();
     // Update the last logout time in database
     try {
         await UserModelDB.updateOne({ email: userEmail }, { lastLogout: logoutTime });

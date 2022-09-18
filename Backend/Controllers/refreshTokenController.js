@@ -26,12 +26,10 @@ const createRefreshToken = async (req, res) => {
 }
 
 const updateRefreshToken = async (req, res) => {
-    // Collect user email in request parameters
-    const userEmail = req.params.email;
     // Collect body fields with Refresh Token data
     const { body } = req;
 
-    const refreshTokenUpdated = await refreshTokenServices.updateRefreshToken(userEmail, body);
+    const refreshTokenUpdated = await refreshTokenServices.updateRefreshToken(body);
     res.status(refreshTokenUpdated.code).send(refreshTokenUpdated);
 }
 

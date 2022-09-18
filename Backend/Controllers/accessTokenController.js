@@ -26,12 +26,10 @@ const createAccessToken = async (req, res) => {
 }
 
 const updateAccessToken = async (req, res) => {
-    // Collect user email in request parameters
-    const userEmail = req.params.email;
     // Collect body fields with Access Token data
     const { body } = req;
 
-    const accessTokenUpdated = await accessTokenServices.updateAccessToken(userEmail, body);
+    const accessTokenUpdated = await accessTokenServices.updateAccessToken(body);
     res.status(accessTokenUpdated.code).send(accessTokenUpdated);
 }
 

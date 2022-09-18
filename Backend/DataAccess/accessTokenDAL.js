@@ -29,7 +29,7 @@ const getAccessTokenByEmail = async (userEmail) => {
         if (!accessTokenFound) {
             return null;
         }
-        return accessTokenFound;
+        return accessTokenFound.accessToken;
     } catch (err) {
         console.log(`getAccessTokenByEmail-Catch Error: ${err}`);
         return new Error(err);
@@ -42,7 +42,7 @@ const getAccessToken = async (token) => {
         if (!accessTokenFound) {
             return null;
         }
-        return accessTokenFound;
+        return accessTokenFound.accessToken;
     } catch (err) {
         console.log(`getAccessToken-Catch Error: ${err}`);
         return new Error(err);
@@ -69,18 +69,18 @@ const createAccessToken = async (userData) => {
     }
 }
 
-const updateAccessToken = async (userEmail, newToken) => {
+const updateAccessToken = async (userData) => {
     // Create a new object with data to update
     const accessTokenData = {
-        accessToken: newToken,
+        accessToken: accessTokenHandler.signAccessToken(userData),
         updatedAt: dateHandler.getStrDateNow(),
         expiresAt: dateHandler.addHoursDateNow(1)
     };
 
     // Update Access Token in database
     try {
-        await AccessTokenModelDB.updateOne({ email: userEmail }, accessTokenData);
-        return true;
+        await AccessTokenModelDB.updateOne({ email: userData.email }, accessTokenData);
+        return accessTokenData.accessToken;
     } catch (err) {
         console.log(`updateAccessToken-Catch Error: ${err}`);
         return new Error(err);

@@ -23,7 +23,7 @@ const getAllUsers = async () => {
         return httpMsgHandler.code404("Users does not found");
     }
 
-    return httpMsgHandler.code200(allUsers);
+    return httpMsgHandler.code200("Users found", allUsers);
 }
 
 const getUser = async (userEmail) => {
@@ -39,7 +39,7 @@ const getUser = async (userEmail) => {
     if (!userFound) {
         return httpMsgHandler.code404("User not found");
     }
-    return httpMsgHandler.code200("Users found", userFound);
+    return httpMsgHandler.code200("User found", userFound);
 }
 
 const createUser = async (userData) => {

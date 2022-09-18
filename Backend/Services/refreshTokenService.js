@@ -58,18 +58,18 @@ const createRefreshToken = async (userData) => {
     return httpMsgHandler.code201('Refresh token created successfully', refreshTokenSaved);
 }
 
-const updateRefreshToken = async (userEmail, tokenData) => {
+const updateRefreshToken = async (userData) => {
     // Check if user email was provided
-    if (!userEmail){
+    if (!userData.email){
         return httpMsgHandler.code400("User email was not provided");
     }
     // Check if new tocken was provided
-    if (!tokenData.refreshToken){
+    if (!userData.refreshToken){
         return httpMsgHandler.code400("Refresh Token was not provided");
     }
 
     // Check if Refresh Token exists in database
-    const refreshTokenExists = await refreshTokenDAL.getRefreshTokenByEmail(userEmail);
+    const refreshTokenExists = await refreshTokenDAL.getRefreshTokenByEmail(userData.email);
     if (refreshTokenExists instanceof Error) {
         return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenExists.message);
     }
@@ -78,7 +78,7 @@ const updateRefreshToken = async (userEmail, tokenData) => {
     }
     
     // Update refresh token in database
-    const refreshTokenUpdated = await refreshTokenDAL.updateRefreshToken(userEmail, tokenData.refreshToken);
+    const refreshTokenUpdated = await refreshTokenDAL.updateRefreshToken(userData);
     if (refreshTokenUpdated instanceof Error) {
         return httpMsgHandler.code500('Error updating Refresh Token', refreshTokenUpdated.message);
     }
