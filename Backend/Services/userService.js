@@ -44,7 +44,7 @@ const updateUser = async (userEmail, userData) => {
         return httpMsgHandler.code500('Error getting User', userExists.message);
     }
     if (!userExists) {
-        return httpMsgHandler.code404("User does not exist");
+        return httpMsgHandler.code404("User not found");
     }
 
     // Check if the user is not trying to update the email address
@@ -66,7 +66,9 @@ const updateUser = async (userEmail, userData) => {
     // Search updated user in database
     const userFound = await userDAL.getUser(userEmail);
     if (userFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting updated User', userFound.message);
+        // The user was updated successfully but the server had an error retrieving the user details
+        // It will return an http error response
+        userFound = "Error getting Updated User";
     }
     // Create an object to show updateduser found
     const updatedUser = {
@@ -87,26 +89,41 @@ const deleteUser = async (userEmail) => {
         return httpMsgHandler.code500('Error getting user', userExists.message);
     }
     if (!userExists) {
-        return httpMsgHandler.code404("User does not exist");
+        return httpMsgHandler.code404("User not found");
     }
 
-    // Delete RefreshToken in database
-    const refreshTokenDeleted = await refreshTokenDAL.deleteRefreshToken(userEmail);
-    if (refreshTokenDeleted instanceof Error) {
-        return httpMsgHandler.code500('Error deleting RefreshToken', refreshTokenDeleted.message);
+    // Verify access token in database, if it exists indicate that the user has an active token
+    const accessTokenFound = await accessTokenDAL.getAccessTokenByEmail(userEmail);
+    if (accessTokenFound instanceof Error) {
+        return httpMsgHandler.code500('Error getting Access token', accessTokenFound.message);
     }
-
-    // Delete AccessToken in database
-    const accessTokenDeleted = await accessTokenDAL.deleteAccessToken(userEmail);
-    if (accessTokenDeleted instanceof Error) {
-        return httpMsgHandler.code500('Error deleting AccessToken', accessTokenDeleted.message);
+    if (accessTokenFound) {
+        // Delete user access token in database
+        const accessTokenDeleted = accessTokenDAL.deleteAccessToken(userEmail);
+        if (accessTokenDeleted === false) {
+            return httpMsgHandler.code500('Error deleting Access Token', accessTokenDeleted.message);
+        }
+    }
+    
+    // Verify refresh token in database, if it exists indicate that the user has an active token
+    const refreshTokenFound = await refreshTokenDAL.getRefreshTokenByEmail(userEmail);
+    if (refreshTokenFound instanceof Error) {
+        return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenFound.message);
+    }
+    if (refreshTokenFound) {
+        // Delete user refresh token in database
+        const refreshTokenDeleted = refreshTokenDAL.deleteRefreshToken(userEmail);
+        if (refreshTokenDeleted === false) {
+            return httpMsgHandler.code500('Error deleting Refresh Token', refreshTokenDeleted.message);
+        }
     }
     
     // Delete user in database
     const userDeleted = await userDAL.deleteUser(userEmail);
     if (userDeleted instanceof Error) {
-        return httpMsgHandler.code500('Error deleting user', userDeleted.message);
+        return httpMsgHandler.code500('Error deleting User', userDeleted.message);
     }
+
     return httpMsgHandler.code200('User deleted successfully');
 }
 

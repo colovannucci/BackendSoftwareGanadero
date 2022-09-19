@@ -10,8 +10,8 @@ const authenticationMiddleware = require('../Middlewares/authenticationMiddlewar
 userAPIRouter.use(authenticationMiddleware);
 
 userAPIRouter
-  .get("/get/:email", userController.getUser)
-  .patch("/update/:email", userController.updateUser)
-  .delete("/delete/:email", userController.deleteUser)
+  .get("/get/:userEmail", userController.getUser)
+  .patch("/update/:userEmail", userController.updateUser)
+  .delete("/delete/:userEmail", userController.deleteUser)
 
 module.exports = userAPIRouter;
