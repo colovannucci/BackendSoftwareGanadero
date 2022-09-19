@@ -12,14 +12,6 @@ const getUser = async (req, res) => {
     res.status(userFound.code).send(userFound);
 }
 
-const createUser = async (req, res) => {
-    // Collect body fields with user data
-    const { body } = req;
-
-    const userSaved = await userServices.createUser(body);
-    res.status(userSaved.code).send(userSaved);
-}
-
 const updateUser = async (req, res) => {
     // Collect user email in request parameters
     const userEmail = req.params.email;
@@ -45,7 +37,6 @@ const test = (req, res) => {
 module.exports = {
     test,
     getUser,
-    createUser,
     updateUser,
     deleteUser
 }

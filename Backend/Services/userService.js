@@ -12,20 +12,6 @@ const accessTokenDAL = require('../DataAccess/accessTokenDAL');
 // Create an instance of User data access layer
 const userDAL = require('../DataAccess/userDAL');
 
-
-const getAllUsers = async () => {
-    // Search all users in database
-    const allUsers = await userDAL.getAllUsers();
-    if (allUsers instanceof Error) {
-        return httpMsgHandler.code500('Error getting users', allUsers.message);
-    }
-    if (!allUsers) {
-        return httpMsgHandler.code404("Users does not found");
-    }
-
-    return httpMsgHandler.code200("Users found", allUsers);
-}
-
 const getUser = async (userEmail) => {
     // Check if user email was provided
     if (!userEmail){
@@ -34,41 +20,17 @@ const getUser = async (userEmail) => {
     // Search user in database
     const userFound = await userDAL.getUser(userEmail);
     if (userFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting user', userFound.message);
+        return httpMsgHandler.code500('Error getting User', userFound.message);
     }
     if (!userFound) {
         return httpMsgHandler.code404("User not found");
     }
-    return httpMsgHandler.code200("User found", userFound);
-}
 
-const createUser = async (userData) => {
-    // Check if body has all required fields
-    const hasRequiredFields = await userValidator.hasRequiredFields(userData);
-    if (!hasRequiredFields) {
-        return httpMsgHandler.code400("Missing fields on body");
-    }
-    // Check if body has only valid fields
-    const hasValidFields = await userValidator.hasValidFields(userData);
-    if (!hasValidFields) {
-        return httpMsgHandler.code400("Invalid fields added on body");
-    }
-
-    // Check if user email exists in database
-    const userExists = await userDAL.getUser(userData.email);
-    if (userExists instanceof Error) {
-        return httpMsgHandler.code500('Error getting user', userExists.message);
-    }
-    if (userExists) {
-        return httpMsgHandler.code400("User email already exists");
-    }
-    
-    // Create user in database
-    const userSaved = await userDAL.createUser(userData);
-    if (userSaved instanceof Error) {
-        return httpMsgHandler.code500('Error saving user', userSaved.message);
-    }
-    return httpMsgHandler.code201('User created successfully', userSaved);
+    // Create an object to show user found
+    const userData = {
+        user: userFound
+    };
+    return httpMsgHandler.code200("User found successfully", userData);
 }
 
 const updateUser = async (userEmail, userData) => {
@@ -79,7 +41,7 @@ const updateUser = async (userEmail, userData) => {
     // Check if user email exists in database
     const userExists = await userDAL.getUser(userEmail);
     if (userExists instanceof Error) {
-        return httpMsgHandler.code500('Error getting user', userExists.message);
+        return httpMsgHandler.code500('Error getting User', userExists.message);
     }
     if (!userExists) {
         return httpMsgHandler.code404("User does not exist");
@@ -98,9 +60,20 @@ const updateUser = async (userEmail, userData) => {
     // Update user in database
     const userUpdated = await userDAL.updateUser(userEmail, userData);
     if (userUpdated instanceof Error) {
-        return httpMsgHandler.code500('Error updating user', userUpdated.message);
+        return httpMsgHandler.code500('Error updating User', userUpdated.message);
     }
-    return httpMsgHandler.code200('User updated successfully');
+
+    // Search updated user in database
+    const userFound = await userDAL.getUser(userEmail);
+    if (userFound instanceof Error) {
+        return httpMsgHandler.code500('Error getting updated User', userFound.message);
+    }
+    // Create an object to show updateduser found
+    const updatedUser = {
+        user: userFound
+    };
+
+    return httpMsgHandler.code200('User updated successfully', updatedUser);
 }
 
 const deleteUser = async (userEmail) => {
@@ -137,24 +110,8 @@ const deleteUser = async (userEmail) => {
     return httpMsgHandler.code200('User deleted successfully');
 }
 
-const getUserPassword = async (userEmail) => {
-
-    const userPassword = await userDAL.getUserPassword(userEmail);
-    if (userPassword instanceof Error) {
-        return httpMsgHandler.code500('Error getting password', userPassword.message);
-    }
-    if (!userPassword) {
-        return httpMsgHandler.code404("Password not found");
-    }
-
-    return httpMsgHandler.code200(userPassword);
-}
-
 module.exports = {
-    getAllUsers,
     getUser,
-    createUser,
     updateUser,
-    deleteUser,
-    getUserPassword
+    deleteUser
 }

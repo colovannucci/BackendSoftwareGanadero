@@ -7,8 +7,6 @@ const httpMsgHandler = require('../Helpers/handleHttpMessage');
 const pswHandler = require('../Helpers/handlePassword');
 // Require handler for refresh token
 const refreshTokenHandler = require('../Helpers/handleRefreshToken');
-// Require handler for access token
-const accessTokenHandler = require('../Helpers/handleAccessToken');
 // Require user validator fields
 const userValidator = require('../Validators/userValidator');
 // Create an instance of User data access layer
@@ -33,33 +31,43 @@ const signUp = async (userData) => {
     // Check if user email exists in database
     const userExists = await userDAL.getUser(userData.email);
     if (userExists instanceof Error) {
-        return httpMsgHandler.code500('Error getting user', userExists.message);
+        return httpMsgHandler.code500('Error getting User', userExists.message);
     }
     if (userExists) {
         return httpMsgHandler.code400("User email already exists");
     }
     // Create user in database
-    const userSaved = await userDAL.createUser(userData);
-    if (userSaved instanceof Error) {
-        return httpMsgHandler.code500('Error saving user', userSaved.message);
+    const userCreated = await userDAL.createUser(userData);
+    if (userCreated instanceof Error) {
+        return httpMsgHandler.code500('Error creating User', userCreated.message);
     }
-    return httpMsgHandler.code201('User created successfully', userSaved);
+
+    // Create an object to show user created
+    const userSaved = {
+        user: userCreated
+    };
+    return httpMsgHandler.code201('User Signed Up successfully', userSaved);
 }
 
 const signIn = async (userCredentials) => {
-    // Check if body has both credentails fields: email and password
-    const hasCredentials = await userValidator.hasCredentials(userCredentials);
-    if (!hasCredentials) {
+    // Check if body has credentails fields
+    const hasRequiredCredentials = await userValidator.hasRequiredCredentials(userCredentials);
+    if (!hasRequiredCredentials) {
         return httpMsgHandler.code400("Missing credentials on body");
+    }
+    // Check if body has only valid fields
+    const hasValidCredentials = await userValidator.hasValidCredentials(userCredentials);
+    if (!hasValidCredentials) {
+        return httpMsgHandler.code400("Invalid credential fields added on body");
     }
 
     // Check if user exists in database
     const userFound = await userDAL.getUser(userCredentials.email);
     if (userFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting user', userFound.message);
+        return httpMsgHandler.code500('Error getting User', userFound.message);
     }
     if (!userFound) {
-        return httpMsgHandler.code400("Invalid username or password");
+        return httpMsgHandler.code404("Invalid username or password");
     }
 
     // Check if user password of database
@@ -68,7 +76,7 @@ const signIn = async (userCredentials) => {
         return httpMsgHandler.code500('Error getting password', userPassword.message);
     }
     if (!userPassword) {
-        return httpMsgHandler.code400("Invalid username or password");
+        return httpMsgHandler.code404("User has not a password registered");
     }
     // Check if user password is correct
     const isPswValid = pswHandler.compare(userCredentials.password, userPassword);
@@ -81,17 +89,16 @@ const signIn = async (userCredentials) => {
         accessToken: "", 
         refreshToken: ""
     };
-    
     // Verify access token in database, if it exists indicate that the user has an active token
     const accessTokenFound = await accessTokenDAL.getAccessTokenByEmail(userCredentials.email);
     if (accessTokenFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting Access token', accessTokenFound.message);
+        return httpMsgHandler.code500('Error getting Access Token', accessTokenFound.message);
     }
     if (accessTokenFound) {
         // Update access token in database
         const accessTokenUpdated = await accessTokenDAL.updateAccessToken(userFound);
         if (accessTokenUpdated instanceof Error) {
-            return httpMsgHandler.code500('Error updating access token', accessTokenUpdated.message);
+            return httpMsgHandler.code500('Error updating Access Token', accessTokenUpdated.message);
         }
 
         // Save access token generated in variable
@@ -100,7 +107,7 @@ const signIn = async (userCredentials) => {
         // Save access token in database
         const accessTokenSaved = await accessTokenDAL.createAccessToken(userFound);
         if (accessTokenSaved instanceof Error) {
-            return httpMsgHandler.code500('Error saving access token', accessTokenSaved.message);
+            return httpMsgHandler.code500('Error saving Access Token', accessTokenSaved.message);
         }
 
         // Save access token generated in variable
@@ -110,13 +117,13 @@ const signIn = async (userCredentials) => {
     // Verify refresh token in database, if it exists indicate that the user has an active token
     const refreshTokenFound = await refreshTokenDAL.getRefreshTokenByEmail(userCredentials.email);
     if (refreshTokenFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting refresh token', refreshTokenFound.message);
+        return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenFound.message);
     }
     if (refreshTokenFound) {
         // Update refresh token in database
         const refreshTokenUpdated = await refreshTokenDAL.updateRefreshToken(userFound);
         if (refreshTokenUpdated instanceof Error) {
-            return httpMsgHandler.code500('Error updating refresh token', refreshTokenUpdated.message);
+            return httpMsgHandler.code500('Error updating Refresh Token', refreshTokenUpdated.message);
         }
 
         // Save refresh token generated in variable
@@ -125,7 +132,7 @@ const signIn = async (userCredentials) => {
         // Save refresh token in database
         const refreshTokenSaved = await refreshTokenDAL.createRefreshToken(userFound);
         if (refreshTokenSaved instanceof Error) {
-            return httpMsgHandler.code500('Error saving Refresh token', refreshTokenSaved.message);
+            return httpMsgHandler.code500('Error saving Refresh Token', refreshTokenSaved.message);
         }
 
         // Save refresh token generated in variable
@@ -135,10 +142,10 @@ const signIn = async (userCredentials) => {
     // Update user with new login datetime in database
     const loginTimeUpdated = userDAL.updateLoginTime(userCredentials.email);
     if (loginTimeUpdated === false) {
-        return httpMsgHandler.code500('Error saving last login time', loginTimeUpdated.message);
+        return httpMsgHandler.code500('Error saving User Login Time', loginTimeUpdated.message);
     }
 
-    return httpMsgHandler.code200('User signed in successfully', userTokens);
+    return httpMsgHandler.code200('User Signed In successfully', userTokens);
 }
 
 const signOut = async (userData) => {
@@ -149,7 +156,7 @@ const signOut = async (userData) => {
     // Search user in database
     const userFound = await userDAL.getUser(userData.email);
     if (userFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting user', userFound.message);
+        return httpMsgHandler.code500('Error getting User', userFound.message);
     }
     if (!userFound) {
         return httpMsgHandler.code404("User not found");
@@ -164,30 +171,30 @@ const signOut = async (userData) => {
         // Delete user access token in database
         const accessTokenDeleted = accessTokenDAL.deleteAccessToken(userData.email);
         if (accessTokenDeleted === false) {
-            return httpMsgHandler.code500('Error deleting access token', accessTokenDeleted.message);
+            return httpMsgHandler.code500('Error deleting Access Token', accessTokenDeleted.message);
         }
     }
     
     // Verify refresh token in database, if it exists indicate that the user has an active token
     const refreshTokenFound = await refreshTokenDAL.getRefreshTokenByEmail(userData.email);
     if (refreshTokenFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting refresh token', refreshTokenFound.message);
+        return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenFound.message);
     }
     if (refreshTokenFound) {
         // Delete user refresh token in database
         const refreshTokenDeleted = refreshTokenDAL.deleteRefreshToken(userData.email);
         if (refreshTokenDeleted === false) {
-            return httpMsgHandler.code500('Error deleting refresh token', refreshTokenDeleted.message);
+            return httpMsgHandler.code500('Error deleting Refresh Token', refreshTokenDeleted.message);
         }
     }
 
     // Update user with new logout datetime in database
     const logoutTimeUpdated = userDAL.updateLogoutTime(userData.email);
     if (logoutTimeUpdated === false) {
-        return httpMsgHandler.code500('Error saving last logout time', logoutTimeUpdated.message);
+        return httpMsgHandler.code500('Error saving User Logout Time', logoutTimeUpdated.message);
     }
 
-    return httpMsgHandler.code200('User signed out successfully');
+    return httpMsgHandler.code200('User Signed Out successfully');
 }
 
 const generateNewAccessToken = async (userData) => {
@@ -197,22 +204,22 @@ const generateNewAccessToken = async (userData) => {
     }
     // Check if user refresh token was provided
     if (!userData.refreshToken){
-        return httpMsgHandler.code400("Refresh token was not provided");
+        return httpMsgHandler.code400("Refresh Token was not provided");
     }
 
     // Verify user in database
     const userFound = await userDAL.getUser(userData.email);
     if (userFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting user', userFound.message);
+        return httpMsgHandler.code500('Error getting User', userFound.message);
     }
     if (!userFound) {
         return httpMsgHandler.code404("User not found");
     }
 
-    // Verify refresh token in database
+    // Verify if user has a refresh token in database
     const refreshTokenFound = await refreshTokenDAL.getRefreshTokenByEmail(userData.email);
     if (refreshTokenFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting refresh token', refreshTokenFound.message);
+        return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenFound.message);
     }
     if (refreshTokenFound) {
         // Verify refresh token provided is the same as we have saved in database
@@ -220,37 +227,45 @@ const generateNewAccessToken = async (userData) => {
             // Check if refresh token is valid
             const isRefreshTokenValid = refreshTokenHandler.verifyRefreshToken(userData.refreshToken);
             if (isRefreshTokenValid instanceof Error) {
-                return httpMsgHandler.code400("Refresh token is not valid");
+                return httpMsgHandler.code401("Refresh Token is not valid");
             }
         } else {
-            return httpMsgHandler.code400("Refresh token not found");
+            return httpMsgHandler.code401("Refresh Token provided does not belongs to the user");
         }
     } else {
-        return httpMsgHandler.code404("Refresh token not found");
+        return httpMsgHandler.code404("Refresh Token not found");
     }
     
+    // Create an empty object to save new token generated
+    const userToken = {
+        accessToken: ""
+    };
     // Verify access token in database, if it exists indicate that the user has an active token
     const accessTokenFound = await accessTokenDAL.getAccessTokenByEmail(userData.email);
     if (accessTokenFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting Access token', accessTokenFound.message);
+        return httpMsgHandler.code500('Error getting Access Token', accessTokenFound.message);
     }
     if (accessTokenFound) {
         // Update access token in database
         const accessTokenUpdated = await accessTokenDAL.updateAccessToken(userFound);
         if (accessTokenUpdated instanceof Error) {
-            return httpMsgHandler.code500('Error updating access token', accessTokenUpdated.message);
+            return httpMsgHandler.code500('Error updating Access Token', accessTokenUpdated.message);
         }
 
-        return httpMsgHandler.code200('New access token generated successfully', accessTokenUpdated);
+        // Save access token generated in variable
+        userToken.accessToken = accessTokenUpdated;
     } else {
         // Save access token in database
         const accessTokenSaved = await accessTokenDAL.createAccessToken(userFound);
         if (accessTokenSaved instanceof Error) {
-            return httpMsgHandler.code500('Error saving access token', accessTokenSaved.message);
+            return httpMsgHandler.code500('Error saving Access Token', accessTokenSaved.message);
         }
 
-        return httpMsgHandler.code200('New access token generated successfully', accessTokenSaved);
+        // Save access token generated in variable
+        userToken.accessToken = accessTokenSaved;
     }
+
+    return httpMsgHandler.code201('New Access Token generated successfully', userToken);
 }
 
 module.exports = {

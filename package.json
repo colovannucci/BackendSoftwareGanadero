@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./Backend/index.js",
-    "dev": "nodemon ./Backend/index.js",
-    "test": "nodemon ./Backend/Test/indexTest.js"
+    "dev": "nodemon ./Backend/index.js"
   },
   "keywords": [],
   "author": "Franco Vannucci <francovannuf@gmail.com>",
