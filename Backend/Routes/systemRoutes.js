@@ -9,9 +9,9 @@ const systemController = require("../Controllers/systemController");
 const authenticationMiddleware = require('../Middlewares/authenticationMiddleware');
 
 systemAPIRouter
-    .post('/signup', systemController.signUp)
-    .post('/signin', systemController.signIn)
-    .post('/signout', authenticationMiddleware, systemController.signOut)
-    .post('/generatenewaccesstoken', systemController.generateNewAccessToken);
+    .post('/signUp', systemController.signUp)
+    .post('/signIn', systemController.signIn)
+    .post('/signOut', authenticationMiddleware, systemController.signOut)
+    .post('/generateNewAccessToken', systemController.generateNewAccessToken);
 
 module.exports = systemAPIRouter;
