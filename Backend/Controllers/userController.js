@@ -5,16 +5,17 @@
 const userServices = require('../Services/userService');
 
 const getUser = async (req, res) => {
-    // Collect user email in request parameters
-    const userEmail = req.params.email;
+    // Collect user email in request
+    //const userEmail = req.params.email;
+    const userEmail = req.params.userEmail;
 
     const userFound = await userServices.getUser(userEmail);
     res.status(userFound.code).send(userFound);
 }
 
 const updateUser = async (req, res) => {
-    // Collect user email in request parameters
-    const userEmail = req.params.email;
+    // Collect userEmail in request
+    const userEmail = req.params.userEmail;
     // Collect body fields with user data
     const { body } = req;
 
@@ -23,7 +24,8 @@ const updateUser = async (req, res) => {
 }
 
 const deleteUser = async (req, res) => {
-    const userEmail = req.params.email;
+    // Collect userEmail in request
+    const userEmail = req.params.userEmail;
 
     const userDeleted = await userServices.deleteUser(userEmail);
     res.status(userDeleted.code).send(userDeleted);
