@@ -1,0 +1,8 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/e37f05e7-a097-4719-82df-23956423660d/AppServices/subscriptions/e37f05e7-a097-4719-82df-23956423660d/resourceGroups/backend-software-ganadero-resource-group/providers/Microsoft.Web/sites/backend-software-ganadero",
+    "appService.deploySubpath": ".",
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ]
+}

@@ -24,9 +24,15 @@ app.use("/api/v1/user", v1UserRouter);
 const v1SystemRouter = require("./Routes/systemRoutes");
 app.use("/api/v1/system", v1SystemRouter);
 
+// Send a welcome message
+app.use('/welcome', (req, res) => {
+  //res.send('Hello World, from express');
+  res.send({ code: 204, status: "No Content", message: "Hello World! Welcome!" });
+});
+
 // If any route matches, request fails and send this
 app.use('*', (req, res) => {
-  res.status(404).send({ status: "ERROR", message: "Are you lost?" });
+  res.status(404).send({ code: 404, status: "ERROR", message: "Are you lost?" });
 });
 
 module.exports = app;
