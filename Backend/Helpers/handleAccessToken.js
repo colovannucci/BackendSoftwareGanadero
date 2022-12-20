@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
 
 const signAccessToken = (user) => {
     try {
-        const accessToken = jwt.sign( { user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+        const accessToken = jwt.sign( { user }, process.env.APPSETTING_ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
         return accessToken;
     } catch (err) {
         console.log(`signAccessToken-Catch Error: ${err}`);
@@ -18,7 +18,7 @@ const signAccessToken = (user) => {
 
 const verifyAccessToken = (token) => {
     try {
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        jwt.verify(token, process.env.APPSETTING_ACCESS_TOKEN_SECRET);
         return true;
     } catch (err) {
         console.log(`verifyAccesshToken-Catch Error: ${err}`);

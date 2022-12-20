@@ -5,6 +5,10 @@ const express = require("express");
 const systemAPIRouter = express.Router();
 const systemController = require("../Controllers/systemController");
 
+// Protect the routes with an db connection middleware.
+const dbConnectionMiddleware = require('../Middlewares/dbConnectionMiddleware');
+systemAPIRouter.use(dbConnectionMiddleware);
+
 // Protect the routes with an auth middleware.
 const authenticationMiddleware = require('../Middlewares/authenticationMiddleware');
 

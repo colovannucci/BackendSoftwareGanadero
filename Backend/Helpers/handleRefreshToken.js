@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
 
 const signRefreshToken = (user) => {
     try {
-        const refreshToken = jwt.sign( { user }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '30d' });
+        const refreshToken = jwt.sign( { user }, process.env.APPSETTING_REFRESH_TOKEN_SECRET, { expiresIn: '30d' });
         return refreshToken;
     } catch (err) {
         console.log(`signRefreshToken-Catch Error: ${err}`);
@@ -18,7 +18,7 @@ const signRefreshToken = (user) => {
 
 const verifyRefreshToken = (token) => {
     try {
-        jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+        jwt.verify(token, process.env.APPSETTING_REFRESH_TOKEN_SECRET);
         return true;
     } catch (err) {
         console.log(`verifyRefreshToken-Catch Error: ${err}`);

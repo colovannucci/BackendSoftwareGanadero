@@ -1,9 +1,6 @@
 // Use restrictive JS mode to avoid silence errors of the project
 'use strict'
 
-// Require handler jwt library
-const jwt = require('jsonwebtoken')
-
 // Require handler http messages
 const httpMsgHandler = require('../Helpers/handleHttpMessage');
 // Require handler access token

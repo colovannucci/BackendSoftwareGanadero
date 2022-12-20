@@ -8,8 +8,8 @@ require('dotenv').config();
 const httpMessages = require('../Helpers/handleHttpMessage');
 
 const isConnected = async (req, res, next) => {
-    const dbConnected = process.env.DB_CONNECTED;
-    if (dbConnected === "Y") {
+    const DB_CONNECTED = process.env.APPSETTING_DB_CONNECTED;
+    if (DB_CONNECTED === "Y") {
         next();
     } else {
         const http503 = httpMessages.code503('Database is not connected');

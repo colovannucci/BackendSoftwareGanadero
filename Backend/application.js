@@ -1,6 +1,11 @@
 // Use restrictive JS mode to avoid silence errors of the project
 'use strict'
 
+// Require dotenv for environment variables
+require('dotenv').config();
+const PORT = process.env.PORT;
+
+// Require express to create a server instance
 const express = require("express");
 const app = express();
 
@@ -13,26 +18,32 @@ app.use(cors({ origin: '*', methods: ['GET','POST', 'PATCH', 'DELETE']}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Protect the routes with an db connection middleware.
-const dbConnectionMiddleware = require('./Middlewares/dbConnectionMiddleware');
-app.use(dbConnectionMiddleware);
-
 // Application routes
-const v1UserRouter = require("./Routes/userRoutes");
-app.use("/api/v1/user", v1UserRouter);
-
 const v1SystemRouter = require("./Routes/systemRoutes");
 app.use("/api/v1/system", v1SystemRouter);
 
-// Send a welcome message
-app.use('/welcome', (req, res) => {
-  //res.send('Hello World, from express');
-  res.send({ code: 204, status: "No Content", message: "Hello World! Welcome!" });
+const v1UserRouter = require("./Routes/userRoutes");
+app.use("/api/v1/user", v1UserRouter);
+
+// Send a message indicating the server is working properly
+app.use('/test', (req, res) => {
+  //res.send({ code: 204, status: "No Content", message: "Hello World! Welcome!" });
+  res.send('Hello World! Welcome!');
 });
 
-// If any route matches, request fails and send this
+// If none route matches the request will fail and sent this message
 app.use('*', (req, res) => {
-  res.status(404).send({ code: 404, status: "ERROR", message: "Are you lost?" });
+  res.status(404).send({ code: 404, status: "Not Found", message: "Empty Route! Are you lost?" });
 });
 
-module.exports = app;
+// Web server connection function
+const mainStart = async () => {
+  try {
+    await app.listen(PORT);
+    console.log('Web server listening on port', PORT);
+  } catch (err) {
+    console.log('Failed to start the web server', err);
+  }
+}
+
+module.exports = mainStart;
