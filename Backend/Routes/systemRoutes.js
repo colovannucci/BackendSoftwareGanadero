@@ -16,6 +16,8 @@ systemAPIRouter
     .post('/signUp', systemController.signUp)
     .post('/signIn', systemController.signIn)
     .post('/signOut', authenticationMiddleware, systemController.signOut)
-    .post('/generateNewAccessToken', systemController.generateNewAccessToken);
-
+    .post('/generateNewAccessToken', systemController.generateNewAccessToken)
+    .post('/blockUser', systemController.blockUser)
+    .post('/unblockUser', systemController.unblockUser);
+    
 module.exports = systemAPIRouter;

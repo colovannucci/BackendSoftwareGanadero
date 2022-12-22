@@ -36,6 +36,22 @@ const generateNewAccessToken = async (req, res) => {
     res.status(accessTokenGenerated.code).send(accessTokenGenerated);
 }
 
+const blockUser = async (req, res) => {
+    // Collect body fields with user data
+    const { body } = req;
+
+    const blockUser = await systemControlServices.blockUser(body);
+    res.status(blockUser.code).send(blockUser);
+}
+
+const unblockUser = async (req, res) => {
+    // Collect body fields with user data
+    const { body } = req;
+
+    const unblockUser = await systemControlServices.unblockUser(body);
+    res.status(unblockUser.code).send(unblockUser);
+}
+
 const test = (req, res) => {
     console.log('System Routes connected successfully');
     res.status(200).send('System Routes connected successfully');
@@ -46,5 +62,7 @@ module.exports = {
     signUp,
     signIn,
     signOut,
-    generateNewAccessToken
+    generateNewAccessToken,
+    blockUser,
+    unblockUser
 }

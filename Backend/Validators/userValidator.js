@@ -6,10 +6,7 @@ const hasRequiredFields = async (userData) => {
     if (
         userData.email &&
         userData.password &&
-        userData.name &&
-        userData.surname &&
-        userData.phone &&
-        userData.birthDate
+        userData.name
     ) {
         return true;
     }
@@ -18,7 +15,7 @@ const hasRequiredFields = async (userData) => {
 
 const hasValidFields = async (userData) => {
     // Specify valid fields
-    const validFields = ["email", "password", "name", "surname", "phone", "birthDate", "country"];
+    const validFields = ["email", "password", "name"];
     let isValid= true;
     // Collect all body fields
     Object.keys(userData).forEach(fieldName => {

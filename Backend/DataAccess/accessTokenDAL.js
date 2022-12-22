@@ -54,10 +54,12 @@ const createAccessToken = async (userData) => {
     const newAccessToken = new AccessTokenModelDB();
     newAccessToken.email = userData.email;
     newAccessToken.accessToken = accessTokenHandler.signAccessToken(userData);
+
+    // Generate defined values to folowing attributes
     newAccessToken.createdId = uuid();
-    newAccessToken.createdAt = dateHandler.getStrDateNow();
-    newAccessToken.updatedAt = dateHandler.getStrDateNow();
-    newAccessToken.expiresAt = dateHandler.addHoursDateNow(1);
+    newAccessToken.createdAtTime = dateHandler.getStrDateNow();
+    newAccessToken.updatedAtTime = "";
+    newAccessToken.expiresAtTime = dateHandler.addHoursDateNow(1);
 
     // Save new RefreshToken in database
     try {

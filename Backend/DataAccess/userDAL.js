@@ -44,20 +44,18 @@ const createUser = async (userData) => {
     const newUser = new UserModelDB();
     newUser.email = userData.email;
     newUser.name = userData.name;
-    newUser.surname = userData.surname;
-    newUser.birthDate = userData.birthDate;
-    newUser.phone = userData.phone;
     newUser.password = userData.password;
-    // Add fields country (if required), createdId, createdAt and updatedAt
-    if (!userData.country) {
-        newUser.country = 'Uruguay';
-    } else {
-      newUser.country = userData.country;
-    }
-    newUser.createdId = uuid();
-    newUser.createdAt = dateHandler.getStrDateNow();
-    newUser.updatedAt = dateHandler.getStrDateNow();
 
+    // Generate defined values to folowing attributes
+    newUser.createdId = uuid();
+    newUser.createdAtTime = dateHandler.getStrDateNow();
+    newUser.updatedAtTime = "";
+    newUser.lastLoginTime = "";
+    newUser.lastLogoutTime = "";
+    newUser.isBlocked = false;
+    newUser.lastBlockedTime = "";
+    newUser.lastUnblockedTime = "";
+    
     // Save new user in database
     try {
         await newUser.save();
@@ -101,11 +99,11 @@ const deleteUser = async (userEmail) => {
 
 const getUserPassword = async (userEmail) => {
     try {
-        const userPassword = await UserModelDB.findOne({email: userEmail}).select("password");
-        if (!userPassword) {
+        const userData = await UserModelDB.findOne({email: userEmail}).select("password");
+        if (!userData) {
             return null;
         }
-        return userPassword.password;
+        return userData.password;
     } catch (err) {
         console.log(`getUserPassword-Catch Error: ${err}`);
         return new Error(err);
@@ -117,7 +115,7 @@ const updateLoginTime = async (userEmail) => {
     const loginTime = dateHandler.getStrDateNow();
     // Update the last login time in database
     try {
-        await UserModelDB.updateOne({ email: userEmail }, { lastLogin: loginTime });
+        await UserModelDB.updateOne({ email: userEmail }, { lastLoginTime: loginTime });
         return true;
     } catch (err) {
         console.log(`updateLastLoginTime-Catch Error: ${err}`);
@@ -130,10 +128,71 @@ const updateLogoutTime = async (userEmail) => {
     const logoutTime = dateHandler.getStrDateNow();
     // Update the last logout time in database
     try {
-        await UserModelDB.updateOne({ email: userEmail }, { lastLogout: logoutTime });
+        await UserModelDB.updateOne({ email: userEmail }, { lastLogoutTime: logoutTime });
         return true;
     } catch (err) {
         console.log(`updateLogoutTime-Catch Error: ${err}`);
+        return new Error(err);
+    }
+}
+
+const blockUser = async (userEmail) => {
+    // Update user blocked status in database
+    try {
+        await UserModelDB.updateOne({ email: userEmail }, { isBlocked: true });
+        return true;
+    } catch (err) {
+        console.log(`blockUser-Catch Error: ${err}`);
+        return new Error(err);
+    }
+}
+
+const unblockUser = async (userEmail) => {
+    // Update user blocked status in database
+    try {
+        await UserModelDB.updateOne({ email: userEmail }, { isBlocked: false });
+        return true;
+    } catch (err) {
+        console.log(`unblockUser-Catch Error: ${err}`);
+        return new Error(err);
+    }
+}
+
+const getUserBlockedStatus = async (userEmail) => {
+    try {
+        const userData = await UserModelDB.findOne({email: userEmail}).select("isBlocked");
+        console.log('blocked status'); // ACA QUEDE.. ELIMINAR LUEGO DE TESTEADO
+        console.log(userData.isBlocked);
+
+        return userData.isBlocked;
+    } catch (err) {
+        console.log(`getUserBlockedStatus-Catch Error: ${err}`);
+        return new Error(err);
+    }
+}
+
+const updateBlockedTime = async (userEmail) => {
+    // Create the last login time
+    const bloquedTime = dateHandler.getStrDateNow();
+    // Update the last login time in database
+    try {
+        await UserModelDB.updateOne({ email: userEmail }, { lastBlockedTime: bloquedTime });
+        return true;
+    } catch (err) {
+        console.log(`updateBlockedTime-Catch Error: ${err}`);
+        return new Error(err);
+    }
+}
+
+const updateUnblockedTime = async (userEmail) => {
+    // Create the last logout time
+    const unbloquedTime = dateHandler.getStrDateNow();
+    // Update the last logout time in database
+    try {
+        await UserModelDB.updateOne({ email: userEmail }, { lastUnblockedTime: unbloquedTime });
+        return true;
+    } catch (err) {
+        console.log(`updateUnblockedTime-Catch Error: ${err}`);
         return new Error(err);
     }
 }
@@ -146,5 +205,10 @@ module.exports = {
     deleteUser,
     getUserPassword,
     updateLoginTime,
-    updateLogoutTime
+    updateLogoutTime,
+    blockUser,
+    unblockUser,
+    getUserBlockedStatus,
+    updateBlockedTime,
+    updateUnblockedTime
 }

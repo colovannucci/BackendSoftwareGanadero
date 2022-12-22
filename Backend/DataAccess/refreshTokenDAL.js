@@ -54,10 +54,12 @@ const createRefreshToken = async (userData) => {
     const newRefreshToken = new RefreshTokenModelDB();
     newRefreshToken.email = userData.email;
     newRefreshToken.refreshToken = refreshTokenHandler.signRefreshToken(userData);
+
+    // Generate defined values to folowing attributes
     newRefreshToken.createdId = uuid();
-    newRefreshToken.createdAt = dateHandler.getStrDateNow();
-    newRefreshToken.updatedAt = dateHandler.getStrDateNow();
-    newRefreshToken.expiresAt = dateHandler.addDaysDateNow(30);
+    newRefreshToken.createdAtTime = dateHandler.getStrDateNow();
+    newRefreshToken.updatedAtTime = "";
+    newRefreshToken.expiresAtTime = dateHandler.addDaysDateNow(30);
 
     // Save new RefreshToken in database
     try {

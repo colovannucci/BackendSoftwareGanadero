@@ -100,7 +100,7 @@ const deleteUser = async (userEmail) => {
     if (accessTokenFound) {
         // Delete user access token in database
         const accessTokenDeleted = accessTokenDAL.deleteAccessToken(userEmail);
-        if (accessTokenDeleted === false) {
+        if (accessTokenDeleted instanceof Error) {
             return httpMsgHandler.code500('Error deleting Access Token', accessTokenDeleted.message);
         }
     }
@@ -113,7 +113,7 @@ const deleteUser = async (userEmail) => {
     if (refreshTokenFound) {
         // Delete user refresh token in database
         const refreshTokenDeleted = refreshTokenDAL.deleteRefreshToken(userEmail);
-        if (refreshTokenDeleted === false) {
+        if (refreshTokenDeleted instanceof Error) {
             return httpMsgHandler.code500('Error deleting Refresh Token', refreshTokenDeleted.message);
         }
     }

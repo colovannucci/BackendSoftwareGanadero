@@ -7,6 +7,10 @@ const httpMsgHandler = require('../Helpers/handleHttpMessage');
 const pswHandler = require('../Helpers/handlePassword');
 // Require handler for refresh token
 const refreshTokenHandler = require('../Helpers/handleRefreshToken');
+// Require handler for block user token
+const blockUserTokenHandler = require('../Helpers/handleBlockUserToken');
+// Require handler for unblock user token
+const unblockUserTokenHandler = require('../Helpers/handleUnblockUserToken');
 // Require user validator fields
 const userValidator = require('../Validators/userValidator');
 // Create an instance of User data access layer
@@ -31,7 +35,7 @@ const signUp = async (userData) => {
     // Check if user email exists in database
     const userExists = await userDAL.getUser(userData.email);
     if (userExists instanceof Error) {
-        return httpMsgHandler.code500('Error getting User', userExists.message);
+        return httpMsgHandler.code500('Error validating User existence', userExists.message);
     }
     if (userExists) {
         return httpMsgHandler.code400("User email already exists");
@@ -73,10 +77,10 @@ const signIn = async (userCredentials) => {
     // Check if user password of database
     const userPassword = await userDAL.getUserPassword(userCredentials.email);
     if (userPassword instanceof Error) {
-        return httpMsgHandler.code500('Error getting password', userPassword.message);
+        return httpMsgHandler.code500('Error getting Password', userPassword.message);
     }
     if (!userPassword) {
-        return httpMsgHandler.code404("User has not a password registered");
+        return httpMsgHandler.code404("User has not a Password registered");
     }
     // Check if user password is correct
     const isPswValid = pswHandler.compare(userCredentials.password, userPassword);
@@ -141,7 +145,7 @@ const signIn = async (userCredentials) => {
 
     // Update user with new login datetime in database
     const loginTimeUpdated = userDAL.updateLoginTime(userCredentials.email);
-    if (loginTimeUpdated === false) {
+    if (loginTimeUpdated instanceof Error) {
         return httpMsgHandler.code500('Error saving User Login Time', loginTimeUpdated.message);
     }
 
@@ -156,7 +160,7 @@ const signOut = async (userData) => {
     // Search user in database
     const userFound = await userDAL.getUser(userData.email);
     if (userFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting User', userFound.message);
+        return httpMsgHandler.code500('Error validating User existence', userFound.message);
     }
     if (!userFound) {
         return httpMsgHandler.code404("User not found");
@@ -170,7 +174,7 @@ const signOut = async (userData) => {
     if (accessTokenFound) {
         // Delete user access token in database
         const accessTokenDeleted = accessTokenDAL.deleteAccessToken(userData.email);
-        if (accessTokenDeleted === false) {
+        if (accessTokenDeleted instanceof Error) {
             return httpMsgHandler.code500('Error deleting Access Token', accessTokenDeleted.message);
         }
     }
@@ -183,14 +187,14 @@ const signOut = async (userData) => {
     if (refreshTokenFound) {
         // Delete user refresh token in database
         const refreshTokenDeleted = refreshTokenDAL.deleteRefreshToken(userData.email);
-        if (refreshTokenDeleted === false) {
+        if (refreshTokenDeleted instanceof Error) {
             return httpMsgHandler.code500('Error deleting Refresh Token', refreshTokenDeleted.message);
         }
     }
 
     // Update user with new logout datetime in database
     const logoutTimeUpdated = userDAL.updateLogoutTime(userData.email);
-    if (logoutTimeUpdated === false) {
+    if (logoutTimeUpdated instanceof Error) {
         return httpMsgHandler.code500('Error saving User Logout Time', logoutTimeUpdated.message);
     }
 
@@ -210,7 +214,7 @@ const generateNewAccessToken = async (userData) => {
     // Verify user in database
     const userFound = await userDAL.getUser(userData.email);
     if (userFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting User', userFound.message);
+        return httpMsgHandler.code500('Error validating User existence', userFound.message);
     }
     if (!userFound) {
         return httpMsgHandler.code404("User not found");
@@ -268,9 +272,79 @@ const generateNewAccessToken = async (userData) => {
     return httpMsgHandler.code201('New Access Token generated successfully', userToken);
 }
 
+const blockUser = async (userData) => {
+    // Check if user email was provided
+    if (!userData.email){
+        return httpMsgHandler.code400("User email was not provided");
+    }
+    // Check if block User Token was provided
+    if (!userData.blockUserToken){
+        return httpMsgHandler.code400("Block User Token was not provided");
+    }
+
+    // Verify user in database
+    const userFound = await userDAL.getUser(userData.email);
+    if (userFound instanceof Error) {
+        return httpMsgHandler.code500('Error getting User', userFound.message);
+    }
+    if (!userFound) {
+        return httpMsgHandler.code404("User not found");
+    }
+
+    // Verify if user has a blocked status in database
+    const blockedStatusFound = await userDAL.getUserBlockedStatus(userData.email);
+    if (blockedStatusFound instanceof Error) {
+        return httpMsgHandler.code500('Error getting User Blocked status', blockedStatusFound.message);
+    }
+    // Check if the user is already blocked
+    if (blockedStatusFound) {
+        return httpMsgHandler.code404("The User is already Blocked");
+    }
+
+    // Check if block user token is valid
+    const isBlockUserTokenValid = blockUserTokenHandler.verifyBlockUserToken(userData.blockUserToken);
+    if (!isBlockUserTokenValid) {
+        return httpMsgHandler.code401("Block User Token provided is not valid");
+    }
+    
+    // Update user with new blocked datetime in database
+    const bloquedTimeUpdated = userDAL.updateBlockedTime(userData.email);
+    if (bloquedTimeUpdated instanceof Error) {
+        return httpMsgHandler.code500('Error saving User Blocked Time', bloquedTimeUpdated.message);
+    }
+
+    return httpMsgHandler.code200('User Blocked successfully');
+}
+
+const unblockUser = async (userData) => {
+    // Check if user email was provided
+    if (!userData.email){
+        return httpMsgHandler.code400("User email was not provided");
+    }
+    // Check if user refresh token was provided
+    if (!userData.refreshToken){
+        return httpMsgHandler.code400("Refresh Token was not provided");
+    }
+
+    // Verify user in database
+    const userFound = await userDAL.getUser(userData.email);
+    if (userFound instanceof Error) {
+        return httpMsgHandler.code500('Error getting User', userFound.message);
+    }
+    if (!userFound) {
+        return httpMsgHandler.code404("User not found");
+    }
+
+    // WRITE PROCESS
+
+    return httpMsgHandler.code200('User Unblocked successfully');
+}
+
 module.exports = {
     signUp,
     signIn,
     signOut,
-    generateNewAccessToken
+    generateNewAccessToken,
+    blockUser,
+    unblockUser
 }
