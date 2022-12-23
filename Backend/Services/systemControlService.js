@@ -304,8 +304,11 @@ const blockUser = async (userData) => {
     // Check if block user token is valid
     const isBlockUserTokenValid = blockUserTokenHandler.verifyBlockUserToken(userData.blockUserToken);
     if (!isBlockUserTokenValid) {
-        return httpMsgHandler.code401("Block User Token provided is not valid");
+        return httpMsgHandler.code403("Block User Token provided is not valid");
     }
+    
+    // Block user
+    ////////////////////////////////////////////////////////////////
     
     // Update user with new blocked datetime in database
     const bloquedTimeUpdated = userDAL.updateBlockedTime(userData.email);

@@ -31,6 +31,11 @@ const code404 = (msg) => {
     return { code: 404, status: "Not Found", message: msg};
 }
 
+const code415 = (msg) => {
+    
+    return { code: 415, status: "Unsupported Media Type", message: msg};
+}
+
 const code200 = (msg, data) => {
     
     return { code: 200, status: "OK", message: msg, data: data};
@@ -48,6 +53,7 @@ module.exports = {
     code401,
     code403,
     code404,
+    code415,
     code200,
     code201
 }

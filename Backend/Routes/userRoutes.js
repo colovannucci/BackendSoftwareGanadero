@@ -9,7 +9,17 @@ const userController = require("../Controllers/userController");
 const dbConnectionMiddleware = require('../Middlewares/dbConnectionMiddleware');
 userAPIRouter.use(dbConnectionMiddleware);
 
-// Protect all the routes with an auth middleware.
+// Protect the routes with an content type header middleware.
+const contentTypeMiddleware = require('../Middlewares/contentTypeMiddleware');
+userAPIRouter.use(contentTypeMiddleware.isApplicationJson);
+
+// Protect all the routes with an authorization middleware.
+const authorizationMiddleware = require('../Middlewares/authorizationMiddleware');
+userAPIRouter.use(authorizationMiddleware.hasAuthorizationHeader);
+userAPIRouter.use(authorizationMiddleware.hasBearerToken);
+userAPIRouter.use(authorizationMiddleware.findAccessToken);
+
+// Protect all the routes with an authentication middleware.
 const authenticationMiddleware = require('../Middlewares/authenticationMiddleware');
 userAPIRouter.use(authenticationMiddleware);
 

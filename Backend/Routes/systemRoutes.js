@@ -9,13 +9,20 @@ const systemController = require("../Controllers/systemController");
 const dbConnectionMiddleware = require('../Middlewares/dbConnectionMiddleware');
 systemAPIRouter.use(dbConnectionMiddleware);
 
+// Protect the routes with an content type header middleware.
+const contentTypeMiddleware = require('../Middlewares/contentTypeMiddleware');
+systemAPIRouter.use(contentTypeMiddleware.isApplicationJson);
+
+// Protect all the routes with an authorization middleware.
+const authorizationMiddleware = require('../Middlewares/authorizationMiddleware');
+
 // Protect the routes with an auth middleware.
 const authenticationMiddleware = require('../Middlewares/authenticationMiddleware');
 
 systemAPIRouter
     .post('/signUp', systemController.signUp)
     .post('/signIn', systemController.signIn)
-    .post('/signOut', authenticationMiddleware, systemController.signOut)
+    .post('/signOut', authorizationMiddleware.hasAuthorizationHeader, authorizationMiddleware.hasBearerToken, authorizationMiddleware.findAccessToken, authenticationMiddleware, systemController.signOut)
     .post('/generateNewAccessToken', systemController.generateNewAccessToken)
     .post('/blockUser', systemController.blockUser)
     .post('/unblockUser', systemController.unblockUser);
