@@ -277,7 +277,7 @@ const blockUser = async (userData) => {
     if (!userData.email){
         return httpMsgHandler.code400("User email was not provided");
     }
-    // Check if block User Token was provided
+    // Check if Block User Token was provided
     if (!userData.blockUserToken){
         return httpMsgHandler.code400("Block User Token was not provided");
     }
@@ -298,7 +298,7 @@ const blockUser = async (userData) => {
     }
     // Check if the user is already blocked
     if (blockedStatusFound) {
-        return httpMsgHandler.code404("The User is already Blocked");
+        return httpMsgHandler.code400("The User is already Blocked");
     }
 
     // Check if block user token is valid
@@ -307,13 +307,16 @@ const blockUser = async (userData) => {
         return httpMsgHandler.code403("Block User Token provided is not valid");
     }
     
-    // Block user
-    ////////////////////////////////////////////////////////////////
-    
     // Update user with new blocked datetime in database
-    const bloquedTimeUpdated = userDAL.updateBlockedTime(userData.email);
-    if (bloquedTimeUpdated instanceof Error) {
-        return httpMsgHandler.code500('Error saving User Blocked Time', bloquedTimeUpdated.message);
+    const blockedTimeUpdated = userDAL.updateBlockedTime(userData.email);
+    if (blockedTimeUpdated instanceof Error) {
+        return httpMsgHandler.code500('Error saving User Blocked Time', blockedTimeUpdated.message);
+    }
+
+    // Block User
+    const userBlocked = await userDAL.blockUser(userData.email);
+    if (userBlocked instanceof Error) {
+        return httpMsgHandler.code500('Error Blocking User', userBlocked.message);
     }
 
     return httpMsgHandler.code200('User Blocked successfully');
@@ -324,9 +327,9 @@ const unblockUser = async (userData) => {
     if (!userData.email){
         return httpMsgHandler.code400("User email was not provided");
     }
-    // Check if user refresh token was provided
-    if (!userData.refreshToken){
-        return httpMsgHandler.code400("Refresh Token was not provided");
+    // Check if Unblock User Token was provided
+    if (!userData.unblockUserToken){
+        return httpMsgHandler.code400("Unblock User Token was not provided");
     }
 
     // Verify user in database
@@ -338,7 +341,33 @@ const unblockUser = async (userData) => {
         return httpMsgHandler.code404("User not found");
     }
 
-    // WRITE PROCESS
+    // Verify if user has a blocked status in database
+    const blockedStatusFound = await userDAL.getUserBlockedStatus(userData.email);
+    if (blockedStatusFound instanceof Error) {
+        return httpMsgHandler.code500('Error getting User Blocked status', blockedStatusFound.message);
+    }
+    // Check if the user is already blocked
+    if (!blockedStatusFound) {
+        return httpMsgHandler.code400("The User is not Bocked");
+    }
+
+    // Check if block user token is valid
+    const isUnblockUserTokenValid = unblockUserTokenHandler.verifyUnblockUserToken(userData.blockUserToken);
+    if (!isUnblockUserTokenValid) {
+        return httpMsgHandler.code403("Unblock User Token provided is not valid");
+    }
+    
+    // Update user with new blocked datetime in database
+    const unblockedTimeUpdated = userDAL.updateUnblockedTime(userData.email);
+    if (unblockedTimeUpdated instanceof Error) {
+        return httpMsgHandler.code500('Error saving User Unblocked Time', unblockedTimeUpdated.message);
+    }
+
+    // Block User
+    const userUnblocked = await userDAL.unblockUser(userData.email);
+    if (userUnblocked instanceof Error) {
+        return httpMsgHandler.code500('Error Unblocking User', userUnblocked.message);
+    }
 
     return httpMsgHandler.code200('User Unblocked successfully');
 }

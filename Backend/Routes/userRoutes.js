@@ -17,11 +17,8 @@ userAPIRouter.use(contentTypeMiddleware.isApplicationJson);
 const authorizationMiddleware = require('../Middlewares/authorizationMiddleware');
 userAPIRouter.use(authorizationMiddleware.hasAuthorizationHeader);
 userAPIRouter.use(authorizationMiddleware.hasBearerToken);
-userAPIRouter.use(authorizationMiddleware.findAccessToken);
-
-// Protect all the routes with an authentication middleware.
-const authenticationMiddleware = require('../Middlewares/authenticationMiddleware');
-userAPIRouter.use(authenticationMiddleware);
+userAPIRouter.use(authorizationMiddleware.hasAccessToken);
+userAPIRouter.use(authorizationMiddleware.isAuthorized);
 
 userAPIRouter
   .get("/get/:userEmail", userController.getUser)

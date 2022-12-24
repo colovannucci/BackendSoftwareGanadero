@@ -13,16 +13,16 @@ systemAPIRouter.use(dbConnectionMiddleware);
 const contentTypeMiddleware = require('../Middlewares/contentTypeMiddleware');
 systemAPIRouter.use(contentTypeMiddleware.isApplicationJson);
 
-// Protect all the routes with an authorization middleware.
+// Protect the routes with an authorization middleware.
 const authorizationMiddleware = require('../Middlewares/authorizationMiddleware');
 
-// Protect the routes with an auth middleware.
-const authenticationMiddleware = require('../Middlewares/authenticationMiddleware');
+// Protect the routes with an user status middleware.
+const userStatusMiddleware = require('../Middlewares/userStatusMiddleware');
 
 systemAPIRouter
     .post('/signUp', systemController.signUp)
-    .post('/signIn', systemController.signIn)
-    .post('/signOut', authorizationMiddleware.hasAuthorizationHeader, authorizationMiddleware.hasBearerToken, authorizationMiddleware.findAccessToken, authenticationMiddleware, systemController.signOut)
+    .post('/signIn', userStatusMiddleware.isNotBlocked, systemController.signIn)
+    .post('/signOut', authorizationMiddleware.hasAuthorizationHeader, authorizationMiddleware.hasBearerToken, authorizationMiddleware.hasAccessToken, authorizationMiddleware.isAuthorized, systemController.signOut)
     .post('/generateNewAccessToken', systemController.generateNewAccessToken)
     .post('/blockUser', systemController.blockUser)
     .post('/unblockUser', systemController.unblockUser);
