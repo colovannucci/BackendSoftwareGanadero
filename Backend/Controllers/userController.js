@@ -5,29 +5,26 @@
 const userServices = require('../Services/userService');
 
 const getUser = async (req, res) => {
-    // Collect user email in request
-    //const userEmail = req.params.email;
-    const userEmail = req.params.userEmail;
+    // Collect body fields with user data
+    const { body } = req;
 
-    const userFound = await userServices.getUser(userEmail);
+    const userFound = await userServices.getUser(body);
     res.status(userFound.code).send(userFound);
 }
 
 const updateUser = async (req, res) => {
-    // Collect userEmail in request
-    const userEmail = req.params.userEmail;
     // Collect body fields with user data
     const { body } = req;
 
-    const userUpdated = await userServices.updateUser(userEmail, body);
+    const userUpdated = await userServices.updateUser(body);
     res.status(userUpdated.code).send(userUpdated);
 }
 
 const deleteUser = async (req, res) => {
-    // Collect userEmail in request
-    const userEmail = req.params.userEmail;
+    // Collect body fields with user data
+    const { body } = req;
 
-    const userDeleted = await userServices.deleteUser(userEmail);
+    const userDeleted = await userServices.deleteUser(body);
     res.status(userDeleted.code).send(userDeleted);
 }
 

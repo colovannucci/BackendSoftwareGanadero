@@ -18,7 +18,17 @@ const getAllUsers = async () => {
         }
         return allUsers;
     } catch (err) {
-        console.log(`getAllUsers-Catch Error: ${err}`);
+        console.log("getAllUsers-Catch Error: ", err);
+        return new Error(err);
+    }
+}
+
+const verifyUser = async (userEmail) => {
+    try {
+        const userExists = await UserModelDB.exists({ email: userEmail });
+        return userExists;
+    } catch (err) {
+        console.log("verifyUser-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -26,12 +36,9 @@ const getAllUsers = async () => {
 const getUser = async (userEmail) => {
     try {
         const userFound = await UserModelDB.findOne({ email: userEmail }).select("-_id -__v");
-        if (!userFound) {
-            return null;
-        }
         return userFound;
     } catch (err) {
-        console.log(`getUser-Catch Error: ${err}`);
+        console.log("getUser-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -63,7 +70,7 @@ const createUser = async (userData) => {
         delete userData.password;
         return userData;
     } catch (err) {
-        console.log(`createUser-Catch Error: ${err}`);
+        console.log("createUser-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -76,12 +83,13 @@ const updateUser = async (userEmail, userData) => {
     }
     // Add field updatedAt
     userData.updatedAt = dateHandler.getStrDateNow();
+
     // Update user in database
     try {
         await UserModelDB.updateOne({ email: userEmail }, userData);
         return true;
     } catch (err) {
-        console.log(`updateUser-Catch Error: ${err}`);
+        console.log("updateUser-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -92,7 +100,7 @@ const deleteUser = async (userEmail) => {
         await UserModelDB.deleteOne({ email: userEmail });
         return true;
     } catch (err) {
-        console.log(`deleteUser-Catch Error: ${err}`);
+        console.log("deleteUser-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -100,12 +108,9 @@ const deleteUser = async (userEmail) => {
 const getUserPassword = async (userEmail) => {
     try {
         const userData = await UserModelDB.findOne({email: userEmail}).select("password");
-        if (!userData) {
-            return null;
-        }
         return userData.password;
     } catch (err) {
-        console.log(`getUserPassword-Catch Error: ${err}`);
+        console.log("getUserPassword-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -118,7 +123,7 @@ const updateLoginTime = async (userEmail) => {
         await UserModelDB.updateOne({ email: userEmail }, { lastLoginTime: loginTime });
         return true;
     } catch (err) {
-        console.log(`updateLastLoginTime-Catch Error: ${err}`);
+        console.log("updateLastLoginTime-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -131,7 +136,7 @@ const updateLogoutTime = async (userEmail) => {
         await UserModelDB.updateOne({ email: userEmail }, { lastLogoutTime: logoutTime });
         return true;
     } catch (err) {
-        console.log(`updateLogoutTime-Catch Error: ${err}`);
+        console.log("updateLogoutTime-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -142,7 +147,7 @@ const blockUser = async (userEmail) => {
         await UserModelDB.updateOne({ email: userEmail }, { isBlocked: true });
         return true;
     } catch (err) {
-        console.log(`blockUser-Catch Error: ${err}`);
+        console.log("blockUser-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -153,7 +158,7 @@ const unblockUser = async (userEmail) => {
         await UserModelDB.updateOne({ email: userEmail }, { isBlocked: false });
         return true;
     } catch (err) {
-        console.log(`unblockUser-Catch Error: ${err}`);
+        console.log("unblockUser-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -161,12 +166,9 @@ const unblockUser = async (userEmail) => {
 const getUserBlockedStatus = async (userEmail) => {
     try {
         const userData = await UserModelDB.findOne({email: userEmail}).select("isBlocked");
-        console.log('blocked status'); // ACA QUEDE.. ELIMINAR LUEGO DE TESTEADO
-        console.log(userData.isBlocked);
-
         return userData.isBlocked;
     } catch (err) {
-        console.log(`getUserBlockedStatus-Catch Error: ${err}`);
+        console.log("getUserBlockedStatus-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -179,7 +181,7 @@ const updateBlockedTime = async (userEmail) => {
         await UserModelDB.updateOne({ email: userEmail }, { lastBlockedTime: bloquedTime });
         return true;
     } catch (err) {
-        console.log(`updateBlockedTime-Catch Error: ${err}`);
+        console.log("updateBlockedTime-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -192,13 +194,14 @@ const updateUnblockedTime = async (userEmail) => {
         await UserModelDB.updateOne({ email: userEmail }, { lastUnblockedTime: unbloquedTime });
         return true;
     } catch (err) {
-        console.log(`updateUnblockedTime-Catch Error: ${err}`);
+        console.log("updateUnblockedTime-Catch Error: ", err);
         return new Error(err);
     }
 }
 
 module.exports = {
     getAllUsers,
+    verifyUser,
     getUser,
     createUser,
     updateUser,

@@ -18,33 +18,27 @@ const getAllRefreshTokens = async () => {
         }
         return allRefreshTokens;
     } catch (err) {
-        console.log(`getAllRefreshTokens-Catch Error: ${err}`);
+        console.log("getAllRefreshTokens-Catch Error: ", err);
         return new Error(err);
     }
 }
 
-const getRefreshTokenByEmail = async (userEmail) => {
+const verifyrefreshToken = async (userEmail) => {
+    try {
+        const refreshTokenExists = await RefreshTokenModelDB.exists({ email: userEmail });
+        return refreshTokenExists;
+    } catch (err) {
+        console.log("verifyRefreshToken-Catch Error: ", err);
+        return new Error(err);
+    }
+}
+
+const getRefreshToken = async (userEmail) => {
     try {
         const refreshTokenFound = await RefreshTokenModelDB.findOne({ email: userEmail }).select("-_id -__v");
-        if (!refreshTokenFound) {
-            return null;
-        }
         return refreshTokenFound.refreshToken;
     } catch (err) {
-        console.log(`getRefreshTokenByEmail-Catch Error: ${err}`);
-        return new Error(err);
-    }
-}
-
-const getRefreshToken = async (token) => {
-    try {
-        const refreshTokenFound = await RefreshTokenModelDB.findOne({ refreshToken: token }).select("-_id -__v");
-        if (!refreshTokenFound) {
-            return null;
-        }
-        return refreshTokenFound.refreshToken;
-    } catch (err) {
-        console.log(`getRefreshToken-Catch Error: ${err}`);
+        console.log("getRefreshToken-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -66,7 +60,7 @@ const createRefreshToken = async (userData) => {
         await newRefreshToken.save();
         return newRefreshToken.refreshToken;
     } catch (err) {
-        console.log(`createRefreshToken-Catch Error: ${err}`);
+        console.log("createRefreshToken-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -84,7 +78,7 @@ const updateRefreshToken = async (userData) => {
         await RefreshTokenModelDB.updateOne({ email: userData.email }, refeshTokenData);
         return refeshTokenData.refreshToken;
     } catch (err) {
-        console.log(`updateRefreshToken-Catch Error: ${err}`);
+        console.log("updateRefreshToken-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -95,14 +89,14 @@ const deleteRefreshToken = async (userEmail) => {
         await RefreshTokenModelDB.deleteOne({ email: userEmail });
         return true;
     } catch (err) {
-        console.log(`deleteRefreshToken-Catch Error: ${err}`);
+        console.log("deleteRefreshToken-Catch Error: ", err);
         return new Error(err);
     }
 }
 
 module.exports = {
     getAllRefreshTokens,
-    getRefreshTokenByEmail,
+    verifyrefreshToken,
     getRefreshToken,
     createRefreshToken,
     updateRefreshToken,

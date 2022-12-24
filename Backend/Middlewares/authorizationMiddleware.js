@@ -3,8 +3,6 @@
 
 // Require handler http messages
 const httpMsgHandler = require('../Helpers/handleHttpMessage');
-// Create an instance of AccessToken data access layer
-const accessTokenDAL = require('../DataAccess/accessTokenDAL');
 // Require handler access token
 const accessTokenHandler = require('../Helpers/handleAccessToken');
 
@@ -33,29 +31,6 @@ const hasBearerToken = async (req, res, next) => {
     next();
 }
 
-const hasAccessToken = async (req, res, next) => {
-    // Get Authorization header value
-    const authHeaderValue = req.get('Authorization');
-    // Collect token value from authorization header
-    const userToken = authHeaderValue.split(' ')[1];
-
-    // Verify access token in database, if it exists indicate that the user has an active session
-    const accessTokenFound = await accessTokenDAL.getAccessToken(userToken);
-    if (accessTokenFound instanceof Error) {
-        let http500 = httpMsgHandler.code500('Error getting Access Token', accessTokenFound.message);
-        return res.status(http500.code).send(http500);
-    }
-    
-    // Check if the access token was found
-    if (!accessTokenFound){
-        const http404 = httpMsgHandler.code401('Access Token not found');
-        return res.status(http404.code).send(http404);
-    }
-
-    // Middleware passed successfully
-    next();
-}
-
 const isAuthorized = async (req, res, next) => {
     // Get Authorization header value
     const authHeaderValue = req.get('Authorization');
@@ -75,6 +50,5 @@ const isAuthorized = async (req, res, next) => {
 module.exports = {
     hasAuthorizationHeader,
     hasBearerToken,
-    hasAccessToken,
     isAuthorized
 };

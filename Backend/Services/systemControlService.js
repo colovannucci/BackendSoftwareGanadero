@@ -352,7 +352,7 @@ const unblockUser = async (userData) => {
     }
 
     // Check if block user token is valid
-    const isUnblockUserTokenValid = unblockUserTokenHandler.verifyUnblockUserToken(userData.blockUserToken);
+    const isUnblockUserTokenValid = unblockUserTokenHandler.verifyUnblockUserToken(userData.unblockUserToken);
     if (!isUnblockUserTokenValid) {
         return httpMsgHandler.code403("Unblock User Token provided is not valid");
     }

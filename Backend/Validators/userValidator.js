@@ -27,6 +27,20 @@ const hasValidFields = async (userData) => {
     return isValid;
 }
 
+const hasUpdatableFields = async (userData) => {
+    // Specify valid fields
+    const updatableFields = ["password", "name"];
+    let isValid= true;
+    // Collect all body fields
+    Object.keys(userData).forEach(fieldName => {
+        // Check if body has not valid fields
+        if(!updatableFields.includes(fieldName)){
+            isValid = false;
+        }
+    });
+    return isValid;
+}
+
 const hasRequiredCredentials = async (userCredentials) => {
     // Check if body is not empty
     if (
@@ -55,6 +69,7 @@ const hasValidCredentials = async (userCredentials) => {
 module.exports = {
     hasRequiredFields,
     hasValidFields,
+    hasUpdatableFields,
     hasRequiredCredentials,
     hasValidCredentials
 }

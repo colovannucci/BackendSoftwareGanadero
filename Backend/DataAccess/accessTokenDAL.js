@@ -18,33 +18,27 @@ const getAllAccessTokens = async () => {
         }
         return allAccessTokens;
     } catch (err) {
-        console.log(`getAllAccessTokens-Catch Error: ${err}`);
+        console.log("getAllAccessTokens-Catch Error: ", err);
         return new Error(err);
     }
 }
 
-const getAccessTokenByEmail = async (userEmail) => {
+const verifyAccessToken = async (userEmail) => {
+    try {
+        const accessTokenExists = await AccessTokenModelDB.exists({ email: userEmail });
+        return accessTokenExists;
+    } catch (err) {
+        console.log("verifyAccessToken-Catch Error: ", err);
+        return new Error(err);
+    }
+}
+
+const getAccessToken = async (userEmail) => {
     try {
         const accessTokenFound = await AccessTokenModelDB.findOne({ email: userEmail }).select("-_id -__v");
-        if (!accessTokenFound) {
-            return null;
-        }
         return accessTokenFound.accessToken;
     } catch (err) {
-        console.log(`getAccessTokenByEmail-Catch Error: ${err}`);
-        return new Error(err);
-    }
-}
-
-const getAccessToken = async (token) => {
-    try {
-        const accessTokenFound = await AccessTokenModelDB.findOne({ accessToken: token }).select("-_id -__v");
-        if (!accessTokenFound) {
-            return null;
-        }
-        return accessTokenFound.accessToken;
-    } catch (err) {
-        console.log(`getAccessToken-Catch Error: ${err}`);
+        console.log("getAccessToken-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -66,7 +60,7 @@ const createAccessToken = async (userData) => {
         await newAccessToken.save();
         return newAccessToken.accessToken;
     } catch (err) {
-        console.log(`createAccessToken-Catch Error: ${err}`);
+        console.log("createAccessToken-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -84,7 +78,7 @@ const updateAccessToken = async (userData) => {
         await AccessTokenModelDB.updateOne({ email: userData.email }, accessTokenData);
         return accessTokenData.accessToken;
     } catch (err) {
-        console.log(`updateAccessToken-Catch Error: ${err}`);
+        console.log("updateAccessToken-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -95,14 +89,14 @@ const deleteAccessToken = async (userEmail) => {
         await AccessTokenModelDB.deleteOne({ email: userEmail });
         return true;
     } catch (err) {
-        console.log(`deleteAccessToken-Catch Error: ${err}`);
+        console.log("deleteAccessToken-Catch Error: ", err);
         return new Error(err);
     }
 }
 
 module.exports = {
     getAllAccessTokens,
-    getAccessTokenByEmail,
+    verifyAccessToken,
     getAccessToken,
     createAccessToken,
     updateAccessToken,

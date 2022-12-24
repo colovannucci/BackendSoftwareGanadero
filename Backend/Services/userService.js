@@ -12,48 +12,49 @@ const accessTokenDAL = require('../DataAccess/accessTokenDAL');
 // Create an instance of User data access layer
 const userDAL = require('../DataAccess/userDAL');
 
-const getUser = async (userEmail) => {
+const getUser = async (userData) => {
     // Check if user email was provided
-    if (!userEmail){
+    if (!userData.email){
         return httpMsgHandler.code400("User email was not provided");
     }
+    
     // Search user in database
-    const userFound = await userDAL.getUser(userEmail);
+    const userFound = await userDAL.getUser(userData.email);
     if (userFound instanceof Error) {
         return httpMsgHandler.code500('Error getting User', userFound.message);
     }
-    if (!userFound) {
-        return httpMsgHandler.code404("User not found");
-    }
-
+    
     // Create an object to show user found
-    const userData = {
+    const userDataValues = {
         user: userFound
     };
-    return httpMsgHandler.code200("User found successfully", userData);
+
+    return httpMsgHandler.code200("User found successfully", userDataValues);
 }
 
-const updateUser = async (userEmail, userData) => {
+const updateUser = async (userData) => {
     // Check if user email was provided
-    if (!userEmail){
+    if (!userData.email){
         return httpMsgHandler.code400("User email was not provided");
     }
+    /*
     // Check if user email exists in database
-    const userExists = await userDAL.getUser(userEmail);
+    const userExists = await userDAL.getUser(userData.email);
     if (userExists instanceof Error) {
         return httpMsgHandler.code500('Error getting User', userExists.message);
     }
     if (!userExists) {
         return httpMsgHandler.code404("User not found");
     }
+    */
+    // Collect user email value
+    const userEmail = userData.email;
+    // Remove email field from updatable data
+    delete userData.email;
 
-    // Check if the user is not trying to update the email address
-    if (userData.email){
-        return httpMsgHandler.code400("User email cannot be updated");
-    }
     // Check if body has only valid fields
-    const hasValidFields = await userValidator.hasValidFields(userData);
-    if (!hasValidFields) {
+    const hasUpdatableFields = await userValidator.hasUpdatableFields(userData);
+    if (!hasUpdatableFields) {
         return httpMsgHandler.code400("Invalid fields added on body");
     }
     
@@ -67,8 +68,7 @@ const updateUser = async (userEmail, userData) => {
     const userFound = await userDAL.getUser(userEmail);
     if (userFound instanceof Error) {
         // The user was updated successfully but the server had an error retrieving the user details
-        // It will return an http error response
-        userFound = "Error getting Updated User";
+        userFound = "Error getting Updated User data";
     }
     // Create an object to show updateduser found
     const updatedUser = {
@@ -78,48 +78,62 @@ const updateUser = async (userEmail, userData) => {
     return httpMsgHandler.code200('User updated successfully', updatedUser);
 }
 
-const deleteUser = async (userEmail) => {
+const deleteUser = async (userData) => {
     // Check if user email was provided
-    if (!userEmail){
+    if (!userData.email){
         return httpMsgHandler.code400("User email was not provided");
     }
+    /*
     // Check if user email exists in database
-    const userExists = await userDAL.getUser(userEmail);
+    const userExists = await userDAL.getUser(userData.email);
     if (userExists instanceof Error) {
-        return httpMsgHandler.code500('Error getting user', userExists.message);
+        return httpMsgHandler.code500('Error getting User', userExists.message);
     }
     if (!userExists) {
         return httpMsgHandler.code404("User not found");
     }
-
+    */
+    /*
     // Verify access token in database, if it exists indicate that the user has an active token
-    const accessTokenFound = await accessTokenDAL.getAccessTokenByEmail(userEmail);
+    const accessTokenFound = await accessTokenDAL.getAccessToken(userData.email);
     if (accessTokenFound instanceof Error) {
         return httpMsgHandler.code500('Error getting Access token', accessTokenFound.message);
     }
     if (accessTokenFound) {
         // Delete user access token in database
-        const accessTokenDeleted = accessTokenDAL.deleteAccessToken(userEmail);
+        const accessTokenDeleted = accessTokenDAL.deleteAccessToken(userData.email);
         if (accessTokenDeleted instanceof Error) {
             return httpMsgHandler.code500('Error deleting Access Token', accessTokenDeleted.message);
         }
     }
-    
+    */
+    // Delete user access token in database
+    const accessTokenDeleted = accessTokenDAL.deleteAccessToken(userData.email);
+    if (accessTokenDeleted instanceof Error) {
+        return httpMsgHandler.code500('Error deleting Access Token', accessTokenDeleted.message);
+    }
+    /*
     // Verify refresh token in database, if it exists indicate that the user has an active token
-    const refreshTokenFound = await refreshTokenDAL.getRefreshTokenByEmail(userEmail);
+    const refreshTokenFound = await refreshTokenDAL.getRefreshToken(userData.email);
     if (refreshTokenFound instanceof Error) {
         return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenFound.message);
     }
     if (refreshTokenFound) {
         // Delete user refresh token in database
-        const refreshTokenDeleted = refreshTokenDAL.deleteRefreshToken(userEmail);
+        const refreshTokenDeleted = refreshTokenDAL.deleteRefreshToken(userData.email);
         if (refreshTokenDeleted instanceof Error) {
             return httpMsgHandler.code500('Error deleting Refresh Token', refreshTokenDeleted.message);
         }
     }
+    */
+    // Delete user refresh token in database
+    const refreshTokenDeleted = refreshTokenDAL.deleteRefreshToken(userData.email);
+    if (refreshTokenDeleted instanceof Error) {
+        return httpMsgHandler.code500('Error deleting Refresh Token', refreshTokenDeleted.message);
+    }
     
     // Delete user in database
-    const userDeleted = await userDAL.deleteUser(userEmail);
+    const userDeleted = await userDAL.deleteUser(userData.email);
     if (userDeleted instanceof Error) {
         return httpMsgHandler.code500('Error deleting User', userDeleted.message);
     }
