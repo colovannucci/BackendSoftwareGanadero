@@ -23,12 +23,12 @@ const getAllRefreshTokens = async () => {
     }
 }
 
-const verifyrefreshToken = async (userEmail) => {
+const refreshTokenExist = async (userEmail) => {
     try {
         const refreshTokenExists = await RefreshTokenModelDB.exists({ email: userEmail });
         return refreshTokenExists;
     } catch (err) {
-        console.log("verifyRefreshToken-Catch Error: ", err);
+        console.log("refreshTokenExist-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -36,6 +36,9 @@ const verifyrefreshToken = async (userEmail) => {
 const getRefreshToken = async (userEmail) => {
     try {
         const refreshTokenFound = await RefreshTokenModelDB.findOne({ email: userEmail }).select("-_id -__v");
+        if (!refreshTokenFound){
+            return refreshTokenFound;
+        }
         return refreshTokenFound.refreshToken;
     } catch (err) {
         console.log("getRefreshToken-Catch Error: ", err);
@@ -96,7 +99,7 @@ const deleteRefreshToken = async (userEmail) => {
 
 module.exports = {
     getAllRefreshTokens,
-    verifyrefreshToken,
+    refreshTokenExist,
     getRefreshToken,
     createRefreshToken,
     updateRefreshToken,

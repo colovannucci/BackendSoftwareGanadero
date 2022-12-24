@@ -11,7 +11,7 @@ const accessTokenExist = async (req, res, next) => {
     const userEmail = req.body.email;
 
     // Verify accessToken in database
-    const accessTokenExists = await accessTokenDAL.verifyAccessToken(userEmail);
+    const accessTokenExists = await accessTokenDAL.accessTokenExist(userEmail);
     if (accessTokenExists instanceof Error) {
         const http500 = httpMsgHandler.code500('Error verifying Access Token', accessTokenExists.message);
         return res.status(http500.code).send(http500);

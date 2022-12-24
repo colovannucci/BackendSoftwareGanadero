@@ -34,6 +34,10 @@ const refreshTokenMiddleware = require("../Middlewares/refreshTokenMiddleware");
 userAPIRouter
   .post("/get", userController.getUser)
   .post("/update", userController.updateUser)
-  .post("/delete", refreshTokenMiddleware.refreshTokenExist, userController.deleteUser);
+  .post(
+    "/delete",
+    refreshTokenMiddleware.refreshTokenExist,
+    userController.deleteUser
+  );
 
 module.exports = userAPIRouter;

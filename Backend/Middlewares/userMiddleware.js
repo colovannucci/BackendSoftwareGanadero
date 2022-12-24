@@ -11,7 +11,7 @@ const userExist = async (req, res, next) => {
     const userEmail = req.body.email;
 
     // Verify user in database
-    const userExists = await userDAL.verifyUser(userEmail);
+    const userExists = await userDAL.userExist(userEmail);
     if (userExists instanceof Error) {
         const http500 = httpMsgHandler.code500('Error verifying User', userExists.message);
         return res.status(http500.code).send(http500);
@@ -19,6 +19,24 @@ const userExist = async (req, res, next) => {
     if (!userExists) {
         const http404 = httpMsgHandler.code404('User not found');
         return res.status(http404.code).send(http404);
+    }
+    // Middleware passed successfully
+    next();
+}
+
+const userNotExist = async (req, res, next) => {
+    // Collect user email from request body
+    const userEmail = req.body.email;
+
+    // Verify user in database
+    const userExists = await userDAL.userExist(userEmail);
+    if (userExists instanceof Error) {
+        const http500 = httpMsgHandler.code500('Error verifying User', userExists.message);
+        return res.status(http500.code).send(http500);
+    }
+    if (userExists) {
+        const http400 = httpMsgHandler.code400('User already registered');
+        return res.status(http400.code).send(http400);
     }
     // Middleware passed successfully
     next();
@@ -45,5 +63,6 @@ const isNotBlocked = async (req, res, next) => {
 
 module.exports = {
     userExist,
+    userNotExist,
     isNotBlocked
 };

@@ -5,6 +5,8 @@
 const httpMsgHandler = require('../Helpers/handleHttpMessage');
 // Require handler access token
 const accessTokenHandler = require('../Helpers/handleAccessToken');
+// Create an instance of User data access layer
+const accessTokenDAL = require('../DataAccess/accessTokenDAL');
 
 const hasAuthorizationHeader = async (req, res, next) => {
     // Get Authorization header value
@@ -36,13 +38,27 @@ const isAuthorized = async (req, res, next) => {
     const authHeaderValue = req.get('Authorization');
     // Collect token value from authorization header
     const userToken = authHeaderValue.split(' ')[1];
+    // Collect accessToken email from request body
+    const userEmail = req.body.email;
+
+    console.log("middleware is authorized");
+    // Verify if user has a refresh token in database
+    const accessTokenFound = await accessTokenDAL.getAccessToken(userEmail);
+    if (accessTokenFound instanceof Error) {
+        return httpMsgHandler.code500('Error getting Access Token', accessTokenFound.message);
+    }
 
     // Check if access token is valid and does not expired yet
-    const isTokenValid = accessTokenHandler.verifyAccessToken(userToken);
-    if (isTokenValid instanceof Error) {
-        const http401 = httpMsgHandler.code403('You do not have permission to access on this route');
-        return res.status(http401.code).send(http401);
+    if (accessTokenFound == userToken) {
+        const isAccessTokenValid = accessTokenHandler.verifyAccessToken(userToken);
+        if (isAccessTokenValid instanceof Error) {
+            const http401 = httpMsgHandler.code403('You do not have permission to access on this route');
+            return res.status(http401.code).send(http401);
+        }
+    } else {
+        return httpMsgHandler.code401("Access Token provided does not belongs to the User");
     }
+    
     // Middleware passed successfully
     next();
 }

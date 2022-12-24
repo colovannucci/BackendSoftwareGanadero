@@ -19,13 +19,13 @@ const getAllRefreshTokens = async () => {
     return httpMsgHandler.code200(allRefreshTokens);
 }
 
-const getRefreshTokenByEmail = async (userEmail) => {
+const getRefreshToken = async (userEmail) => {
     // Check if user email was provided
     if (!userEmail){
         return httpMsgHandler.code400("User email was not provided");
     }
     // Search Refresh Token in database
-    const refreshTokenFound = await refreshTokenDAL.getRefreshTokenByEmail(userEmail);
+    const refreshTokenFound = await refreshTokenDAL.getRefreshToken(userEmail);
     if (refreshTokenFound instanceof Error) {
         return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenFound.message);
     }
@@ -42,7 +42,7 @@ const createRefreshToken = async (userData) => {
     }
 
     // Check if Refresh Token exists in database
-    const refreshTokenExists = await refreshTokenDAL.getRefreshTokenByEmail(userData.email);
+    const refreshTokenExists = await refreshTokenDAL.getRefreshToken(userData.email);
     if (refreshTokenExists instanceof Error) {
         return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenExists.message);
     }
@@ -69,7 +69,7 @@ const updateRefreshToken = async (userData) => {
     }
 
     // Check if Refresh Token exists in database
-    const refreshTokenExists = await refreshTokenDAL.getRefreshTokenByEmail(userData.email);
+    const refreshTokenExists = await refreshTokenDAL.getRefreshToken(userData.email);
     if (refreshTokenExists instanceof Error) {
         return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenExists.message);
     }
@@ -109,7 +109,7 @@ const deleteRefreshToken = async (userEmail) => {
 
 module.exports = {
     getAllRefreshTokens,
-    getRefreshTokenByEmail,
+    getRefreshToken,
     createRefreshToken,
     updateRefreshToken,
     deleteRefreshToken

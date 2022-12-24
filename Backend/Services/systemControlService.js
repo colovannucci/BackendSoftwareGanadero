@@ -31,7 +31,7 @@ const signUp = async (userData) => {
     if (!hasValidFields) {
         return httpMsgHandler.code400("Invalid fields added on body");
     }
-
+/*
     // Check if user email exists in database
     const userExists = await userDAL.getUser(userData.email);
     if (userExists instanceof Error) {
@@ -40,6 +40,7 @@ const signUp = async (userData) => {
     if (userExists) {
         return httpMsgHandler.code400("User email already exists");
     }
+*/
     // Create user in database
     const userCreated = await userDAL.createUser(userData);
     if (userCreated instanceof Error) {
@@ -64,16 +65,13 @@ const signIn = async (userCredentials) => {
     if (!hasValidCredentials) {
         return httpMsgHandler.code400("Invalid credential fields added on body");
     }
-
+    
     // Check if user exists in database
     const userFound = await userDAL.getUser(userCredentials.email);
     if (userFound instanceof Error) {
         return httpMsgHandler.code500('Error getting User', userFound.message);
     }
-    if (!userFound) {
-        return httpMsgHandler.code404("Invalid username or password");
-    }
-
+    
     // Check if user password of database
     const userPassword = await userDAL.getUserPassword(userCredentials.email);
     if (userPassword instanceof Error) {
@@ -93,13 +91,14 @@ const signIn = async (userCredentials) => {
         accessToken: "", 
         refreshToken: ""
     };
+    console.log("function sign in");
     // Verify access token in database, if it exists indicate that the user has an active token
-    const accessTokenFound = await accessTokenDAL.getAccessTokenByEmail(userCredentials.email);
+    const accessTokenFound = await accessTokenDAL.getAccessToken(userCredentials.email);
     if (accessTokenFound instanceof Error) {
         return httpMsgHandler.code500('Error getting Access Token', accessTokenFound.message);
     }
     if (accessTokenFound) {
-        // Update access token in database
+        // Update new access token in database
         const accessTokenUpdated = await accessTokenDAL.updateAccessToken(userFound);
         if (accessTokenUpdated instanceof Error) {
             return httpMsgHandler.code500('Error updating Access Token', accessTokenUpdated.message);
@@ -108,7 +107,7 @@ const signIn = async (userCredentials) => {
         // Save access token generated in variable
         userTokens.accessToken = accessTokenUpdated;
     } else {
-        // Save access token in database
+        // Save new access token in database
         const accessTokenSaved = await accessTokenDAL.createAccessToken(userFound);
         if (accessTokenSaved instanceof Error) {
             return httpMsgHandler.code500('Error saving Access Token', accessTokenSaved.message);
@@ -119,12 +118,12 @@ const signIn = async (userCredentials) => {
     }
     
     // Verify refresh token in database, if it exists indicate that the user has an active token
-    const refreshTokenFound = await refreshTokenDAL.getRefreshTokenByEmail(userCredentials.email);
+    const refreshTokenFound = await refreshTokenDAL.getRefreshToken(userCredentials.email);
     if (refreshTokenFound instanceof Error) {
         return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenFound.message);
     }
     if (refreshTokenFound) {
-        // Update refresh token in database
+        // Update new refresh token in database
         const refreshTokenUpdated = await refreshTokenDAL.updateRefreshToken(userFound);
         if (refreshTokenUpdated instanceof Error) {
             return httpMsgHandler.code500('Error updating Refresh Token', refreshTokenUpdated.message);
@@ -133,7 +132,7 @@ const signIn = async (userCredentials) => {
         // Save refresh token generated in variable
         userTokens.refreshToken = refreshTokenUpdated;
     } else {
-        // Save refresh token in database
+        // Save new refresh token in database
         const refreshTokenSaved = await refreshTokenDAL.createRefreshToken(userFound);
         if (refreshTokenSaved instanceof Error) {
             return httpMsgHandler.code500('Error saving Refresh Token', refreshTokenSaved.message);
@@ -157,6 +156,7 @@ const signOut = async (userData) => {
     if (!userData.email){
         return httpMsgHandler.code400("User email was not provided");
     }
+    /*
     // Search user in database
     const userFound = await userDAL.getUser(userData.email);
     if (userFound instanceof Error) {
@@ -165,9 +165,9 @@ const signOut = async (userData) => {
     if (!userFound) {
         return httpMsgHandler.code404("User not found");
     }
-
+    */
     // Verify access token in database, if it exists indicate that the user has an active token
-    const accessTokenFound = await accessTokenDAL.getAccessTokenByEmail(userData.email);
+    const accessTokenFound = await accessTokenDAL.getAccessToken(userData.email);
     if (accessTokenFound instanceof Error) {
         return httpMsgHandler.code500('Error getting Access token', accessTokenFound.message);
     }
@@ -180,7 +180,7 @@ const signOut = async (userData) => {
     }
     
     // Verify refresh token in database, if it exists indicate that the user has an active token
-    const refreshTokenFound = await refreshTokenDAL.getRefreshTokenByEmail(userData.email);
+    const refreshTokenFound = await refreshTokenDAL.getRefreshToken(userData.email);
     if (refreshTokenFound instanceof Error) {
         return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenFound.message);
     }
@@ -210,47 +210,42 @@ const generateNewAccessToken = async (userData) => {
     if (!userData.refreshToken){
         return httpMsgHandler.code400("Refresh Token was not provided");
     }
-
+    
     // Verify user in database
     const userFound = await userDAL.getUser(userData.email);
     if (userFound instanceof Error) {
         return httpMsgHandler.code500('Error validating User existence', userFound.message);
     }
-    if (!userFound) {
-        return httpMsgHandler.code404("User not found");
-    }
 
     // Verify if user has a refresh token in database
-    const refreshTokenFound = await refreshTokenDAL.getRefreshTokenByEmail(userData.email);
+    const refreshTokenFound = await refreshTokenDAL.getRefreshToken(userData.email);
     if (refreshTokenFound instanceof Error) {
         return httpMsgHandler.code500('Error getting Refresh Token', refreshTokenFound.message);
     }
-    if (refreshTokenFound) {
-        // Verify refresh token provided is the same as we have saved in database
-        if (refreshTokenFound == userData.refreshToken) {
-            // Check if refresh token is valid
-            const isRefreshTokenValid = refreshTokenHandler.verifyRefreshToken(userData.refreshToken);
-            if (isRefreshTokenValid instanceof Error) {
-                return httpMsgHandler.code401("Refresh Token is not valid");
-            }
-        } else {
-            return httpMsgHandler.code401("Refresh Token provided does not belongs to the user");
+
+    // Verify refresh token provided is the same as we have saved in database
+    if (refreshTokenFound == userData.refreshToken) {
+        // Check if refresh token is valid
+        const isRefreshTokenValid = refreshTokenHandler.verifyRefreshToken(userData.refreshToken);
+        if (isRefreshTokenValid instanceof Error) {
+            return httpMsgHandler.code401("Refresh Token is not valid");
         }
     } else {
-        return httpMsgHandler.code404("Refresh Token not found");
+        return httpMsgHandler.code401("Refresh Token provided does not belongs to the User");
     }
     
     // Create an empty object to save new token generated
     const userToken = {
         accessToken: ""
     };
+    
     // Verify access token in database, if it exists indicate that the user has an active token
-    const accessTokenFound = await accessTokenDAL.getAccessTokenByEmail(userData.email);
+    const accessTokenFound = await accessTokenDAL.getAccessToken(userData.email);
     if (accessTokenFound instanceof Error) {
         return httpMsgHandler.code500('Error getting Access Token', accessTokenFound.message);
     }
     if (accessTokenFound) {
-        // Update access token in database
+        // Update new access token in database
         const accessTokenUpdated = await accessTokenDAL.updateAccessToken(userFound);
         if (accessTokenUpdated instanceof Error) {
             return httpMsgHandler.code500('Error updating Access Token', accessTokenUpdated.message);
@@ -259,7 +254,7 @@ const generateNewAccessToken = async (userData) => {
         // Save access token generated in variable
         userToken.accessToken = accessTokenUpdated;
     } else {
-        // Save access token in database
+        // Save new access token in database
         const accessTokenSaved = await accessTokenDAL.createAccessToken(userFound);
         if (accessTokenSaved instanceof Error) {
             return httpMsgHandler.code500('Error saving Access Token', accessTokenSaved.message);
@@ -281,7 +276,7 @@ const blockUser = async (userData) => {
     if (!userData.blockUserToken){
         return httpMsgHandler.code400("Block User Token was not provided");
     }
-
+    /*
     // Verify user in database
     const userFound = await userDAL.getUser(userData.email);
     if (userFound instanceof Error) {
@@ -290,7 +285,7 @@ const blockUser = async (userData) => {
     if (!userFound) {
         return httpMsgHandler.code404("User not found");
     }
-
+    */
     // Verify if user has a blocked status in database
     const blockedStatusFound = await userDAL.getUserBlockedStatus(userData.email);
     if (blockedStatusFound instanceof Error) {
@@ -331,7 +326,7 @@ const unblockUser = async (userData) => {
     if (!userData.unblockUserToken){
         return httpMsgHandler.code400("Unblock User Token was not provided");
     }
-
+    /*
     // Verify user in database
     const userFound = await userDAL.getUser(userData.email);
     if (userFound instanceof Error) {
@@ -340,7 +335,7 @@ const unblockUser = async (userData) => {
     if (!userFound) {
         return httpMsgHandler.code404("User not found");
     }
-
+    */
     // Verify if user has a blocked status in database
     const blockedStatusFound = await userDAL.getUserBlockedStatus(userData.email);
     if (blockedStatusFound instanceof Error) {
@@ -363,7 +358,7 @@ const unblockUser = async (userData) => {
         return httpMsgHandler.code500('Error saving User Unblocked Time', unblockedTimeUpdated.message);
     }
 
-    // Block User
+    // Unblock User
     const userUnblocked = await userDAL.unblockUser(userData.email);
     if (userUnblocked instanceof Error) {
         return httpMsgHandler.code500('Error Unblocking User', userUnblocked.message);

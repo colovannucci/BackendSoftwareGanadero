@@ -23,12 +23,12 @@ const getAllUsers = async () => {
     }
 }
 
-const verifyUser = async (userEmail) => {
+const userExist = async (userEmail) => {
     try {
         const userExists = await UserModelDB.exists({ email: userEmail });
         return userExists;
     } catch (err) {
-        console.log("verifyUser-Catch Error: ", err);
+        console.log("userExist-Catch Error: ", err);
         return new Error(err);
     }
 }
@@ -201,7 +201,7 @@ const updateUnblockedTime = async (userEmail) => {
 
 module.exports = {
     getAllUsers,
-    verifyUser,
+    userExist,
     getUser,
     createUser,
     updateUser,

@@ -20,13 +20,13 @@ const getAllAccessTokens = async () => {
     return httpMsgHandler.code200(allAccessTokens);
 }
 
-const getAccessTokenByEmail = async (userEmail) => {
+const getAccessToken = async (userEmail) => {
     // Check if user email was provided
     if (!userEmail){
         return httpMsgHandler.code400("User email was not provided");
     }
     // Search Access token in database
-    const accessTokenFound = await accessTokenDAL.getAccessTokenByEmail(userEmail);
+    const accessTokenFound = await accessTokenDAL.getAccessToken(userEmail);
     if (accessTokenFound instanceof Error) {
         return httpMsgHandler.code500('Error getting Access Token', accessTokenFound.message);
     }
@@ -43,7 +43,7 @@ const createAccessToken = async (userData) => {
     }
 
     // Check if Access Token exists in database
-    const accessTokenExists = await accessTokenDAL.getAccessTokenByEmail(userData.email);
+    const accessTokenExists = await accessTokenDAL.getAccessToken(userData.email);
     if (accessTokenExists instanceof Error) {
         return httpMsgHandler.code500('Error getting Access Token', accessTokenExists.message);
     }
@@ -70,7 +70,7 @@ const updateAccessToken = async (userData) => {
     }
 
     // Check if Refresh Token exists in database
-    const accessTokenExists = await accessTokenDAL.getAccessTokenByEmail(userData.email);
+    const accessTokenExists = await accessTokenDAL.getAccessToken(userData.email);
     if (accessTokenExists instanceof Error) {
         return httpMsgHandler.code500('Error getting Access Token', accessTokenExists.message);
     }
@@ -110,7 +110,7 @@ const deleteAccessToken = async (userEmail) => {
 
 module.exports = {
     getAllAccessTokens,
-    getAccessTokenByEmail,
+    getAccessToken,
     createAccessToken,
     updateAccessToken,
     deleteAccessToken

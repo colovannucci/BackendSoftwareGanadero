@@ -22,9 +22,11 @@ const authorizationMiddleware = require("../Middlewares/authorizationMiddleware"
 // Protect the routes with an user status middleware.
 const userMiddleware = require("../Middlewares/userMiddleware");
 
-userAPIRouter.use();
+// Protect routes with an refresh token middleware.
+const refreshTokenMiddleware = require("../Middlewares/refreshTokenMiddleware");
+
 systemAPIRouter
-  .post("/signUp", systemController.signUp)
+  .post("/signUp", userMiddleware.userNotExist, systemController.signUp)
   .post(
     "/signIn",
     userMiddleware.userExist,
@@ -34,6 +36,8 @@ systemAPIRouter
   .post(
     "/signOut",
     userMiddleware.userExist,
+    userMiddleware.isNotBlocked,
+    refreshTokenMiddleware.refreshTokenExist,
     accessTokenMiddleware.accessTokenExist,
     authorizationMiddleware.hasAuthorizationHeader,
     authorizationMiddleware.hasBearerToken,
@@ -44,6 +48,7 @@ systemAPIRouter
     "/generateNewAccessToken",
     userMiddleware.userExist,
     userMiddleware.isNotBlocked,
+    refreshTokenMiddleware.refreshTokenExist,
     systemController.generateNewAccessToken
   )
   .post("/blockUser", systemController.blockUser)

@@ -11,7 +11,7 @@ const refreshTokenExist = async (req, res, next) => {
     const userEmail = req.body.email;
 
     // Verify refreshToken in database
-    const refreshTokenExists = await refreshTokenDAL.verifyRefreshToken(userEmail);
+    const refreshTokenExists = await refreshTokenDAL.refreshTokenExist(userEmail);
     if (refreshTokenExists instanceof Error) {
         const http500 = httpMsgHandler.code500('Error verifying Refresh Token', refreshTokenExists.message);
         return res.status(http500.code).send(http500);
