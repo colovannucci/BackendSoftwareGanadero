@@ -50,7 +50,7 @@ systemAPIRouter
   .post(
     "/blockUser",
     userMiddleware.userExist,
-    userMiddleware.isNotBlocked,
+    userMiddleware.isUnblocked,
     systemController.blockUser
   )
   .post(
