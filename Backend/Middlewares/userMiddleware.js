@@ -42,6 +42,25 @@ const userNotExist = async (req, res, next) => {
     next();
 }
 
+const isBlocked = async (req, res, next) => {
+    // Collect user email from request body
+    const userEmail = req.body.email;
+
+    // Verify if user has a blocked status in database
+    const blockedStatusFound = await userDAL.getUserBlockedStatus(userEmail);
+    if (blockedStatusFound instanceof Error) {
+        const http500 = httpMsgHandler.code500('Error getting User Blocked status', blockedStatusFound.message);
+        return res.status(http500.code).send(http500);
+    }
+    // Check if the user is blocked
+    if (!blockedStatusFound) {
+        const http400 = httpMsgHandler.code400('The User is not Bocked', blockedStatusFound.message);
+        return res.status(http400.code).send(http400);
+    }
+    // Middleware passed successfully
+    next();
+}
+
 const isNotBlocked = async (req, res, next) => {
     // Collect user email from request body
     const userEmail = req.body.email;
@@ -64,5 +83,6 @@ const isNotBlocked = async (req, res, next) => {
 module.exports = {
     userExist,
     userNotExist,
+    isBlocked,
     isNotBlocked
 };

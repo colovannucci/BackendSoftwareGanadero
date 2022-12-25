@@ -6,23 +6,23 @@ require('dotenv').config()
 // Require json web token library
 const jwt = require('jsonwebtoken') 
 
-const signAccessToken = (user) => {
+const signAccessToken = async (user) => {
     try {
-        const accessToken = jwt.sign( { user }, process.env.APPSETTING_ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+        const accessToken = await jwt.sign( { user }, process.env.APPSETTING_ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
         return accessToken;
     } catch (err) {
-        console.log(`signAccessToken-Catch Error: ${err}`);
-        return new Error(err);
+        console.log("signAccessToken-Catch Error: ", err);
+        return new Error(err.message);
     }
 }
 
-const verifyAccessToken = (token) => {
+const verifyAccessToken = async (token) => {
     try {
-        jwt.verify(token, process.env.APPSETTING_ACCESS_TOKEN_SECRET);
+        await jwt.verify(token, process.env.APPSETTING_ACCESS_TOKEN_SECRET);
         return true;
     } catch (err) {
-        console.log(`verifyAccesshToken-Catch Error: ${err}`);
-        return new Error(err);
+        console.log("verifyAccesshToken-Catch Error: ", err);
+        return new Error(err.message);
     }
 }
 

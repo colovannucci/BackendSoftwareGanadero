@@ -19,7 +19,7 @@ const getAllUsers = async () => {
         return allUsers;
     } catch (err) {
         console.log("getAllUsers-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -29,7 +29,7 @@ const userExist = async (userEmail) => {
         return userExists;
     } catch (err) {
         console.log("userExist-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -39,19 +39,23 @@ const getUser = async (userEmail) => {
         return userFound;
     } catch (err) {
         console.log("getUser-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
 const createUser = async (userData) => {
-    // Encrypt password
-    userData.password = await pswHandler.encrypt(userData.password);
-
     // Declare new user object with data received
     const newUser = new UserModelDB();
     newUser.email = userData.email;
     newUser.name = userData.name;
-    newUser.password = userData.password;
+
+    // Encrypt password
+    const hashedPassword = await pswHandler.encryptPassword(userData.password);
+    if (hashedPassword instanceof Error) {
+        return httpMsgHandler.code500('Error hashing Password', hashedPassword.message);
+    }
+    // Replace the password with the new password
+    newUser.password = hashedPassword;
 
     // Generate defined values to folowing attributes
     newUser.createdId = uuid();
@@ -71,7 +75,7 @@ const createUser = async (userData) => {
         return userData;
     } catch (err) {
         console.log("createUser-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -79,7 +83,12 @@ const updateUser = async (userEmail, userData) => {
     // Check if the user wants to update his password
     if (userData.password){
         // Encrypt password
-        userData.password = await pswHandler.encrypt(userData.password);
+        const hashedPassword = await pswHandler.encryptPassword(userData.password);
+        if (hashedPassword instanceof Error) {
+            return new Error(hashedPassword.message);
+        }
+        // Replace the password with the new password
+        userData.password = hashedPassword;
     }
     // Add field updatedAt
     userData.updatedAt = dateHandler.getStrDateNow();
@@ -90,7 +99,7 @@ const updateUser = async (userEmail, userData) => {
         return true;
     } catch (err) {
         console.log("updateUser-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -101,7 +110,7 @@ const deleteUser = async (userEmail) => {
         return true;
     } catch (err) {
         console.log("deleteUser-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -111,7 +120,7 @@ const getUserPassword = async (userEmail) => {
         return userData.password;
     } catch (err) {
         console.log("getUserPassword-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -124,7 +133,7 @@ const updateLoginTime = async (userEmail) => {
         return true;
     } catch (err) {
         console.log("updateLastLoginTime-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -137,7 +146,7 @@ const updateLogoutTime = async (userEmail) => {
         return true;
     } catch (err) {
         console.log("updateLogoutTime-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -148,7 +157,7 @@ const blockUser = async (userEmail) => {
         return true;
     } catch (err) {
         console.log("blockUser-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -159,7 +168,7 @@ const unblockUser = async (userEmail) => {
         return true;
     } catch (err) {
         console.log("unblockUser-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -169,7 +178,7 @@ const getUserBlockedStatus = async (userEmail) => {
         return userData.isBlocked;
     } catch (err) {
         console.log("getUserBlockedStatus-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -182,7 +191,7 @@ const updateBlockedTime = async (userEmail) => {
         return true;
     } catch (err) {
         console.log("updateBlockedTime-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -195,7 +204,7 @@ const updateUnblockedTime = async (userEmail) => {
         return true;
     } catch (err) {
         console.log("updateUnblockedTime-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 

@@ -71,6 +71,19 @@ const signIn = async (userCredentials) => {
     if (userFound instanceof Error) {
         return httpMsgHandler.code500('Error getting User', userFound.message);
     }
+    if (!userFound) {
+        return httpMsgHandler.code404('Invalid username or password');
+    }
+
+    // Verify if user has a blocked status in database
+    const blockedStatusFound = await userDAL.getUserBlockedStatus(userCredentials.email);
+    if (blockedStatusFound instanceof Error) {
+        return httpMsgHandler.code500('Error getting User Blocked status', blockedStatusFound.message);
+    }
+    // Check if the user is blocked
+    if (blockedStatusFound) {
+        return httpMsgHandler.code403('Blocked User');
+    }
     
     // Check if user password of database
     const userPassword = await userDAL.getUserPassword(userCredentials.email);
@@ -80,8 +93,12 @@ const signIn = async (userCredentials) => {
     if (!userPassword) {
         return httpMsgHandler.code404("User has not a Password registered");
     }
+
     // Check if user password is correct
-    const isPswValid = pswHandler.compare(userCredentials.password, userPassword);
+    const isPswValid = await pswHandler.comparePassword(userCredentials.password, userPassword);
+    if (isPswValid instanceof Error) {
+        return httpMsgHandler.code500('Error comparing Password', isPswValid.message);
+    }
     if (!isPswValid) {
         return httpMsgHandler.code400("Invalid username or password");
     }
@@ -91,7 +108,7 @@ const signIn = async (userCredentials) => {
         accessToken: "", 
         refreshToken: ""
     };
-    console.log("function sign in");
+    
     // Verify access token in database, if it exists indicate that the user has an active token
     const accessTokenFound = await accessTokenDAL.getAccessToken(userCredentials.email);
     if (accessTokenFound instanceof Error) {
@@ -226,7 +243,7 @@ const generateNewAccessToken = async (userData) => {
     // Verify refresh token provided is the same as we have saved in database
     if (refreshTokenFound == userData.refreshToken) {
         // Check if refresh token is valid
-        const isRefreshTokenValid = refreshTokenHandler.verifyRefreshToken(userData.refreshToken);
+        const isRefreshTokenValid = await refreshTokenHandler.verifyRefreshToken(userData.refreshToken);
         if (isRefreshTokenValid instanceof Error) {
             return httpMsgHandler.code401("Refresh Token is not valid");
         }
@@ -286,6 +303,7 @@ const blockUser = async (userData) => {
         return httpMsgHandler.code404("User not found");
     }
     */
+    /*
     // Verify if user has a blocked status in database
     const blockedStatusFound = await userDAL.getUserBlockedStatus(userData.email);
     if (blockedStatusFound instanceof Error) {
@@ -295,7 +313,7 @@ const blockUser = async (userData) => {
     if (blockedStatusFound) {
         return httpMsgHandler.code400("The User is already Blocked");
     }
-
+    */
     // Check if block user token is valid
     const isBlockUserTokenValid = blockUserTokenHandler.verifyBlockUserToken(userData.blockUserToken);
     if (!isBlockUserTokenValid) {
@@ -336,6 +354,7 @@ const unblockUser = async (userData) => {
         return httpMsgHandler.code404("User not found");
     }
     */
+    /*
     // Verify if user has a blocked status in database
     const blockedStatusFound = await userDAL.getUserBlockedStatus(userData.email);
     if (blockedStatusFound instanceof Error) {
@@ -345,6 +364,7 @@ const unblockUser = async (userData) => {
     if (!blockedStatusFound) {
         return httpMsgHandler.code400("The User is not Bocked");
     }
+    */
 
     // Check if block user token is valid
     const isUnblockUserTokenValid = unblockUserTokenHandler.verifyUnblockUserToken(userData.unblockUserToken);

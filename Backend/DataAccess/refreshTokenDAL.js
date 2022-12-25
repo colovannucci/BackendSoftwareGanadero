@@ -19,7 +19,7 @@ const getAllRefreshTokens = async () => {
         return allRefreshTokens;
     } catch (err) {
         console.log("getAllRefreshTokens-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -29,7 +29,7 @@ const refreshTokenExist = async (userEmail) => {
         return refreshTokenExists;
     } catch (err) {
         console.log("refreshTokenExist-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -42,7 +42,7 @@ const getRefreshToken = async (userEmail) => {
         return refreshTokenFound.refreshToken;
     } catch (err) {
         console.log("getRefreshToken-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -50,7 +50,12 @@ const createRefreshToken = async (userData) => {
      // Declare new RefreshToken object with data received
     const newRefreshToken = new RefreshTokenModelDB();
     newRefreshToken.email = userData.email;
-    newRefreshToken.refreshToken = refreshTokenHandler.signRefreshToken(userData);
+    // Generate a new refresh token value
+    const generatedRefreshToken = await refreshTokenHandler.signRefreshToken(userData);
+    if (generatedRefreshToken instanceof Error) {
+        return new Error(generatedRefreshToken.message);
+    }
+    newRefreshToken.refreshToken = generatedRefreshToken;
 
     // Generate defined values to folowing attributes
     newRefreshToken.createdId = uuid();
@@ -64,14 +69,20 @@ const createRefreshToken = async (userData) => {
         return newRefreshToken.refreshToken;
     } catch (err) {
         console.log("createRefreshToken-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
 const updateRefreshToken = async (userData) => {
+    // Generate a new refresh token value
+    const generatedRefreshToken = await refreshTokenHandler.signRefreshToken(userData);
+    if (generatedRefreshToken instanceof Error) {
+        return new Error(generatedRefreshToken.message);
+    }
+    
     // Create a new object with data to update
     const refeshTokenData = {
-        refreshToken: refreshTokenHandler.signRefreshToken(userData),
+        refreshToken: generatedRefreshToken,
         updatedAt: dateHandler.getStrDateNow(),
         expiresAt: dateHandler.addDaysDateNow(30)
     };
@@ -82,7 +93,7 @@ const updateRefreshToken = async (userData) => {
         return refeshTokenData.refreshToken;
     } catch (err) {
         console.log("updateRefreshToken-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -93,7 +104,7 @@ const deleteRefreshToken = async (userEmail) => {
         return true;
     } catch (err) {
         console.log("deleteRefreshToken-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 

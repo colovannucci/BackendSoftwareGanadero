@@ -41,7 +41,6 @@ const isAuthorized = async (req, res, next) => {
     // Collect accessToken email from request body
     const userEmail = req.body.email;
 
-    console.log("middleware is authorized");
     // Verify if user has a refresh token in database
     const accessTokenFound = await accessTokenDAL.getAccessToken(userEmail);
     if (accessTokenFound instanceof Error) {
@@ -50,7 +49,7 @@ const isAuthorized = async (req, res, next) => {
 
     // Check if access token is valid and does not expired yet
     if (accessTokenFound == userToken) {
-        const isAccessTokenValid = accessTokenHandler.verifyAccessToken(userToken);
+        const isAccessTokenValid = await accessTokenHandler.verifyAccessToken(userToken);
         if (isAccessTokenValid instanceof Error) {
             const http401 = httpMsgHandler.code403('You do not have permission to access on this route');
             return res.status(http401.code).send(http401);

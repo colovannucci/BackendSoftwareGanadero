@@ -2,19 +2,29 @@
 'use strict';
 
 // Require bcrypt library
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
 
-const encrypt = async (plainPassword) => {
-    const hashedPassword = await bcrypt.hash(plainPassword, 10);
-    return hashedPassword;
+const encryptPassword = async (plainPassword) => {
+    try {
+        const hashedPassword = await bcrypt.hash(plainPassword, 10);
+        return hashedPassword;
+    } catch (err) {
+        console.log("encrypt-Catch Error: ", err);
+        return new Error(err.message);
+    }
 }
 
-const compare = async (plainPassword, hashedPassword) => {
-    const isValid = await bcrypt.compare(plainPassword, hashedPassword)
-    return isValid;
+const comparePassword = async (plainPassword, hashedPassword) => {
+    try {
+        const isValid = await bcrypt.compare(plainPassword, hashedPassword);
+        return isValid;
+    } catch (err) {
+        console.log("compare-Catch Error: ", err);
+        return new Error(err.message);
+    }
 }
 
 module.exports = {
-    encrypt,
-    compare
+    encryptPassword,
+    comparePassword
 }

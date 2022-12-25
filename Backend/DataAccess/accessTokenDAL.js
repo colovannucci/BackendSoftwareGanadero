@@ -19,7 +19,7 @@ const getAllAccessTokens = async () => {
         return allAccessTokens;
     } catch (err) {
         console.log("getAllAccessTokens-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -29,7 +29,7 @@ const accessTokenExist = async (userEmail) => {
         return accessTokenExists;
     } catch (err) {
         console.log("accessTokenExist-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -42,7 +42,7 @@ const getAccessToken = async (userEmail) => {
         return accessTokenFound.accessToken;
     } catch (err) {
         console.log("getAccessToken-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -50,8 +50,13 @@ const createAccessToken = async (userData) => {
      // Declare new RefreshToken object with data received
     const newAccessToken = new AccessTokenModelDB();
     newAccessToken.email = userData.email;
-    newAccessToken.accessToken = accessTokenHandler.signAccessToken(userData);
-
+    // Generate a new access token value
+    const generatedAccessToken = await accessTokenHandler.signAccessToken(userData);
+    if (generatedAccessToken instanceof Error) {
+        return new Error(generatedAccessToken.message);
+    }
+    newAccessToken.accessToken = generatedAccessToken;
+    
     // Generate defined values to folowing attributes
     newAccessToken.createdId = uuid();
     newAccessToken.createdAtTime = dateHandler.getStrDateNow();
@@ -64,14 +69,20 @@ const createAccessToken = async (userData) => {
         return newAccessToken.accessToken;
     } catch (err) {
         console.log("createAccessToken-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
 const updateAccessToken = async (userData) => {
+    // Generate a new access token value
+    const generatedAccessToken = await accessTokenHandler.signAccessToken(userData);
+    if (generatedAccessToken instanceof Error) {
+        return new Error(generatedAccessToken.message);
+    }
+
     // Create a new object with data to update
     const accessTokenData = {
-        accessToken: accessTokenHandler.signAccessToken(userData),
+        accessToken: generatedAccessToken,
         updatedAt: dateHandler.getStrDateNow(),
         expiresAt: dateHandler.addHoursDateNow(1)
     };
@@ -82,7 +93,7 @@ const updateAccessToken = async (userData) => {
         return accessTokenData.accessToken;
     } catch (err) {
         console.log("updateAccessToken-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 
@@ -93,7 +104,7 @@ const deleteAccessToken = async (userEmail) => {
         return true;
     } catch (err) {
         console.log("deleteAccessToken-Catch Error: ", err);
-        return new Error(err);
+        return new Error(err.message);
     }
 }
 

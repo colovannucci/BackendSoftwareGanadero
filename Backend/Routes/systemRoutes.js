@@ -27,12 +27,7 @@ const refreshTokenMiddleware = require("../Middlewares/refreshTokenMiddleware");
 
 systemAPIRouter
   .post("/signUp", userMiddleware.userNotExist, systemController.signUp)
-  .post(
-    "/signIn",
-    userMiddleware.userExist,
-    userMiddleware.isNotBlocked,
-    systemController.signIn
-  )
+  .post("/signIn", systemController.signIn)
   .post(
     "/signOut",
     userMiddleware.userExist,
@@ -51,7 +46,17 @@ systemAPIRouter
     refreshTokenMiddleware.refreshTokenExist,
     systemController.generateNewAccessToken
   )
-  .post("/blockUser", systemController.blockUser)
-  .post("/unblockUser", systemController.unblockUser);
+  .post(
+    "/blockUser",
+    userMiddleware.userExist,
+    userMiddleware.isNotBlocked,
+    systemController.blockUser
+  )
+  .post(
+    "/unblockUser",
+    userMiddleware.userExist,
+    userMiddleware.isBlocked,
+    systemController.unblockUser
+  );
 
 module.exports = systemAPIRouter;
