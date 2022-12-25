@@ -10,6 +10,7 @@ const httpMessages = require('../Helpers/handleHttpMessage');
 const isConnected = async (req, res, next) => {
     const DB_CONNECTED = process.env.APPSETTING_DB_CONNECTED;
     if (DB_CONNECTED === "Y") {
+        // Middleware passed successfully
         next();
     } else {
         const http503 = httpMessages.code503('Database is not connected');

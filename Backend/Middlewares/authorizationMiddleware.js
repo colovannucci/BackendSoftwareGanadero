@@ -13,7 +13,7 @@ const hasAuthorizationHeader = async (req, res, next) => {
     const authHeaderValue = req.get('Authorization');
     // Check if authorization header was provided
     if (!authHeaderValue) {
-        let http400 = httpMsgHandler.code400('Authorization Header required');
+        const http400 = httpMsgHandler.code400('Authorization Header required');
         return res.status(http400.code).send(http400);
     }
     // Middleware passed successfully
@@ -26,7 +26,7 @@ const hasBearerToken = async (req, res, next) => {
     // Collect token value from authorization header
     const userToken = authHeaderValue.split(' ')[1];
     if (userToken == null) {
-        let http400 = httpMsgHandler.code400('Bearer Token required in Authorization Header');
+        const http400 = httpMsgHandler.code400('Bearer Token required in Authorization Header');
         return res.status(http400.code).send(http400);
     }
     // Middleware passed successfully
@@ -51,7 +51,7 @@ const isAuthorized = async (req, res, next) => {
     if (accessTokenFound == userToken) {
         const isAccessTokenValid = await accessTokenHandler.verifyAccessToken(userToken);
         if (isAccessTokenValid instanceof Error) {
-            const http401 = httpMsgHandler.code403('You do not have permission to access on this route');
+            const http401 = httpMsgHandler.code401('You do not have permission to access on this route');
             return res.status(http401.code).send(http401);
         }
     } else {

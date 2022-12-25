@@ -58,8 +58,8 @@ const updateUser = async (userData) => {
     // Search updated user in database
     const userFound = await userDAL.getUser(userEmail);
     if (userFound instanceof Error) {
-        // The user was updated successfully but the server had an error retrieving the user details
-        userFound = "Error getting Updated User data";
+        // The user was updated successfully but the server had an error retrieving the values
+        userFound = "Error getting updated User data";
     }
     // Create an object to show updateduser found
     const updatedUser = {

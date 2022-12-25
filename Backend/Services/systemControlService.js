@@ -31,16 +31,7 @@ const signUp = async (userData) => {
     if (!hasValidFields) {
         return httpMsgHandler.code400("Invalid fields added on body");
     }
-/*
-    // Check if user email exists in database
-    const userExists = await userDAL.getUser(userData.email);
-    if (userExists instanceof Error) {
-        return httpMsgHandler.code500('Error validating User existence', userExists.message);
-    }
-    if (userExists) {
-        return httpMsgHandler.code400("User email already exists");
-    }
-*/
+
     // Create user in database
     const userCreated = await userDAL.createUser(userData);
     if (userCreated instanceof Error) {

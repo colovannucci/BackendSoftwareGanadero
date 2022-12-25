@@ -11,6 +11,7 @@ systemAPIRouter.use(dbConnectionMiddleware);
 
 // Protect the routes with an content type header middleware.
 const contentTypeMiddleware = require("../Middlewares/contentTypeMiddleware");
+systemAPIRouter.use(contentTypeMiddleware.hasContentTypeHeader);
 systemAPIRouter.use(contentTypeMiddleware.isApplicationJson);
 
 // Protect routes with an access token middleware.

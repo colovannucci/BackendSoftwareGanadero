@@ -11,6 +11,7 @@ userAPIRouter.use(dbConnectionMiddleware);
 
 // Protect the routes with an content type header middleware.
 const contentTypeMiddleware = require("../Middlewares/contentTypeMiddleware");
+userAPIRouter.use(contentTypeMiddleware.hasContentTypeHeader);
 userAPIRouter.use(contentTypeMiddleware.isApplicationJson);
 
 // Protect all the routes with an user status middleware.

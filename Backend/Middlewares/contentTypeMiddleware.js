@@ -4,6 +4,18 @@
 // Require handler http messages
 const httpMsgHandler = require('../Helpers/handleHttpMessage');
 
+const hasContentTypeHeader = async (req, res, next) => {
+    // Collect Content-Type header value
+    const contentTypeHeaderValue = req.get('Content-Type');
+    // Check if Content-Type header was provided
+    if (!contentTypeHeaderValue) {
+        const http400 = httpMsgHandler.code400('Content-Type Header required');
+        return res.status(http400.code).send(http400);
+    }
+    // Middleware passed successfully
+    next();
+}
+
 const isApplicationJson = async (req, res, next) => {
     // Collect Content-Type header value
     const contentTypeHeaderValue = req.get('Content-Type');
@@ -18,6 +30,7 @@ const isApplicationJson = async (req, res, next) => {
 }
 
 module.exports = {
+    hasContentTypeHeader,
     isApplicationJson
 };
 
