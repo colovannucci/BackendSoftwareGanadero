@@ -3,8 +3,8 @@
 
 // Require to collect DB configuration
 const connectDB = require('./dbConfig');
-connectDB();
+await connectDB();
 
 // Require to collect application configuration
 const mainStart = require('./application');
-mainStart();
+await mainStart();

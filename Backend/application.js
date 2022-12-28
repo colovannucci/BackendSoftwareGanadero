@@ -19,11 +19,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Application routes
-const v1SystemRouter = require("./Routes/systemRoutes");
-app.use("/api/v1/system", v1SystemRouter);
+const systemRoutes = require("./Routes/systemRoutes");
+app.use("/api/v1/system", systemRoutes);
 
-const v1UserRouter = require("./Routes/userRoutes");
-app.use("/api/v1/user", v1UserRouter);
+const userRoutes = require("./Routes/userRoutes");
+app.use("/api/v1/user", userRoutes);
+
+const establishmentRoutes = require("./Routes/establishmentRoutes");
+app.use("/api/v1/establishment", establishmentRoutes);
 
 // Send a message indicating the server is working properly
 app.use('/test', (req, res) => {
