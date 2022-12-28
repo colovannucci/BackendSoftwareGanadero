@@ -5,7 +5,7 @@
 const httpMsgHandler = require('../Helpers/handleHttpMessage');
 // Require handler access token
 const accessTokenHandler = require('../Helpers/handleAccessToken');
-// Create an instance of User data access layer
+// Create an instance of accessTokenDAL (data access layer)
 const accessTokenDAL = require('../DataAccess/accessTokenDAL');
 
 const hasAuthorizationHeader = async (req, res, next) => {

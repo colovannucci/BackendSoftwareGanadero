@@ -2,13 +2,13 @@
 'use strict';
 
 // Create an instance of User Service
-const userServices = require('../Services/userService');
+const userService = require('../Services/userService');
 
 const getUser = async (req, res) => {
     // Collect body fields with user data
     const { body } = req;
 
-    const userFound = await userServices.getUser(body);
+    const userFound = await userService.getUser(body);
     res.status(userFound.code).send(userFound);
 }
 
@@ -16,7 +16,7 @@ const updateUser = async (req, res) => {
     // Collect body fields with user data
     const { body } = req;
 
-    const userUpdated = await userServices.updateUser(body);
+    const userUpdated = await userService.updateUser(body);
     res.status(userUpdated.code).send(userUpdated);
 }
 
@@ -24,7 +24,7 @@ const deleteUser = async (req, res) => {
     // Collect body fields with user data
     const { body } = req;
 
-    const userDeleted = await userServices.deleteUser(body);
+    const userDeleted = await userService.deleteUser(body);
     res.status(userDeleted.code).send(userDeleted);
 }
 

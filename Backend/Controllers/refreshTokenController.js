@@ -2,10 +2,10 @@
 'use strict';
 
 // Create an instance of User Service
-const refreshTokenServices = require('../Services/refreshTokenService');
+const refreshTokenService = require('../Services/refreshTokenService');
 
 const getAllRefreshTokens = async (req, res) => {
-    const allRefreshTokens = await refreshTokenServices.getAllRefreshTokens();
+    const allRefreshTokens = await refreshTokenService.getAllRefreshTokens();
     res.status(allRefreshTokens.code).send(allRefreshTokens);
 }
 
@@ -13,7 +13,7 @@ const getRefreshTokenByEmail = async (req, res) => {
     // Collect user email in request parameters
     const userEmail = req.params.email;
 
-    const refreshTokenFound = await refreshTokenServices.getRefreshTokenByEmail(userEmail);
+    const refreshTokenFound = await refreshTokenService.getRefreshTokenByEmail(userEmail);
     res.status(refreshTokenFound.code).send(refreshTokenFound);
 }
 
@@ -21,7 +21,7 @@ const createRefreshToken = async (req, res) => {
     // Collect body fields with user data
     const { body } = req;
 
-    const refreshTokenSaved = await refreshTokenServices.createRefreshToken(body);
+    const refreshTokenSaved = await refreshTokenService.createRefreshToken(body);
     res.status(refreshTokenSaved.code).send(refreshTokenSaved);
 }
 
@@ -29,14 +29,14 @@ const updateRefreshToken = async (req, res) => {
     // Collect body fields with Refresh Token data
     const { body } = req;
 
-    const refreshTokenUpdated = await refreshTokenServices.updateRefreshToken(body);
+    const refreshTokenUpdated = await refreshTokenService.updateRefreshToken(body);
     res.status(refreshTokenUpdated.code).send(refreshTokenUpdated);
 }
 
 const deleteRefreshToken = async (req, res) => {
     const userEmail = req.params.email;
 
-    const refreshTokenDeleted = await refreshTokenServices.deleteRefreshToken(userEmail);
+    const refreshTokenDeleted = await refreshTokenService.deleteRefreshToken(userEmail);
     res.status(refreshTokenDeleted.code).send(refreshTokenDeleted);
 }
 

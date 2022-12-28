@@ -7,12 +7,12 @@ const { v4: uuid } = require("uuid");
 const refreshTokenHandler = require('../Helpers/handleRefreshToken');
 // Require handler moment dates
 const dateHandler = require('../Helpers/handleDate');
-// Use MongoDB RefreshToken Schema
-const RefreshTokenModelDB = require('../Models/refreshTokenModel');
+// Use refreshTokenModelDB (MongoDB Schema)
+const refreshTokenModelDB = require('../Models/refreshTokenModelDB');
 
 const getAllRefreshTokens = async () => {
     try {
-        const allRefreshTokens = await RefreshTokenModelDB.find({}).select("-_id -__v");
+        const allRefreshTokens = await refreshTokenModelDB.find({}).select("-_id -__v");
         if (allRefreshTokens.length === 0) {
             return null;
         }
@@ -25,7 +25,7 @@ const getAllRefreshTokens = async () => {
 
 const refreshTokenExist = async (userEmail) => {
     try {
-        const refreshTokenExists = await RefreshTokenModelDB.exists({ email: userEmail });
+        const refreshTokenExists = await refreshTokenModelDB.exists({ email: userEmail });
         return refreshTokenExists;
     } catch (err) {
         console.log("refreshTokenExist-Catch Error: ", err);
@@ -35,7 +35,7 @@ const refreshTokenExist = async (userEmail) => {
 
 const getRefreshToken = async (userEmail) => {
     try {
-        const refreshTokenFound = await RefreshTokenModelDB.findOne({ email: userEmail }).select("-_id -__v");
+        const refreshTokenFound = await refreshTokenModelDB.findOne({ email: userEmail }).select("-_id -__v");
         if (!refreshTokenFound){
             return refreshTokenFound;
         }
@@ -48,7 +48,7 @@ const getRefreshToken = async (userEmail) => {
 
 const createRefreshToken = async (userData) => {
      // Declare new RefreshToken object with data received
-    const newRefreshToken = new RefreshTokenModelDB();
+    const newRefreshToken = new refreshTokenModelDB();
     newRefreshToken.email = userData.email;
     // Generate a new refresh token value
     const generatedRefreshToken = await refreshTokenHandler.signRefreshToken(userData);
@@ -89,7 +89,7 @@ const updateRefreshToken = async (userData) => {
 
     // Update Refresh Token in database
     try {
-        await RefreshTokenModelDB.updateOne({ email: userData.email }, refeshTokenData);
+        await refreshTokenModelDB.updateOne({ email: userData.email }, refeshTokenData);
         return refeshTokenData.refreshToken;
     } catch (err) {
         console.log("updateRefreshToken-Catch Error: ", err);
@@ -100,7 +100,7 @@ const updateRefreshToken = async (userData) => {
 const deleteRefreshToken = async (userEmail) => {
     // Delete RefreshToken in database
     try {
-        await RefreshTokenModelDB.deleteOne({ email: userEmail });
+        await refreshTokenModelDB.deleteOne({ email: userEmail });
         return true;
     } catch (err) {
         console.log("deleteRefreshToken-Catch Error: ", err);

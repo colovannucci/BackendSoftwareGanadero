@@ -3,7 +3,7 @@
 
 // Require handler http messages
 const httpMsgHandler = require('../Helpers/handleHttpMessage');
-// Create an instance of Access Token data access layer
+// Create an instance of accessTokenDAL (data access layer)
 const accessTokenDAL = require('../DataAccess/accessTokenDAL');
 
 

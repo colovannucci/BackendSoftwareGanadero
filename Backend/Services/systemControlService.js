@@ -11,13 +11,13 @@ const refreshTokenHandler = require('../Helpers/handleRefreshToken');
 const blockUserTokenHandler = require('../Helpers/handleBlockUserToken');
 // Require handler for unblock user token
 const unblockUserTokenHandler = require('../Helpers/handleUnblockUserToken');
-// Require user validator fields
+// Require userValidator fields
 const userValidator = require('../Validators/userValidator');
-// Create an instance of User data access layer
+// Create an instance of userDAL (data access layer)
 const userDAL = require('../DataAccess/userDAL');
-// Create an instance of RefreshToken data access layer
+// Create an instance of refreshTokenDAL (data access layer)
 const refreshTokenDAL = require('../DataAccess/refreshTokenDAL');
-// Create an instance of AccessToken data access layer
+// Create an instance of accessTokenDAL (data access layer)
 const accessTokenDAL = require('../DataAccess/accessTokenDAL');
 
 const signUp = async (userData) => {

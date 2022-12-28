@@ -2,30 +2,46 @@
 'use strict';
 
 // Create an instance of User Service
-const userServices = require('../Services/userService');
+const establishmentService = require('../Services/establishmentService');
 
-const getUser = async (req, res) => {
+const getAllEstablishments = async (req, res) => {
     // Collect body fields with user data
     const { body } = req;
 
-    const userFound = await userServices.getUser(body);
-    res.status(userFound.code).send(userFound);
+    const allEstablishmentsFound = await establishmentService.getAllEstablishments(body);
+    res.status(allEstablishmentsFound.code).send(allEstablishmentsFound);
 }
 
-const updateUser = async (req, res) => {
+const getEstablishment = async (req, res) => {
     // Collect body fields with user data
     const { body } = req;
 
-    const userUpdated = await userServices.updateUser(body);
-    res.status(userUpdated.code).send(userUpdated);
+    const establishmentFound = await establishmentService.getEstablishment(body);
+    res.status(establishmentFound.code).send(establishmentFound);
 }
 
-const deleteUser = async (req, res) => {
+const createEstablishment = async (req, res) => {
     // Collect body fields with user data
     const { body } = req;
 
-    const userDeleted = await userServices.deleteUser(body);
-    res.status(userDeleted.code).send(userDeleted);
+    const establishmentCreated = await establishmentService.createEstablishment(body);
+    res.status(establishmentCreated.code).send(establishmentCreated);
+}
+
+const updateEstablishment = async (req, res) => {
+    // Collect body fields with user data
+    const { body } = req;
+
+    const establishmentUpdated = await establishmentService.updateEstablishment(body);
+    res.status(establishmentUpdated.code).send(establishmentUpdated);
+}
+
+const deleteEstablishment = async (req, res) => {
+    // Collect body fields with user data
+    const { body } = req;
+
+    const establishmentDeleted = await establishmentService.deleteEstablishment(body);
+    res.status(establishmentDeleted.code).send(establishmentDeleted);
 }
 
 const test = (req, res) => {
@@ -35,7 +51,9 @@ const test = (req, res) => {
 
 module.exports = {
     test,
-    getUser,
-    updateUser,
-    deleteUser
+    getAllEstablishments,
+    getEstablishment,
+    createEstablishment,
+    updateEstablishment,
+    deleteEstablishment
 }

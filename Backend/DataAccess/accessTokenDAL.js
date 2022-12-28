@@ -7,12 +7,12 @@ const { v4: uuid } = require("uuid");
 const accessTokenHandler = require('../Helpers/handleAccessToken');
 // Require handler moment dates
 const dateHandler = require('../Helpers/handleDate');
-// Use MongoDB AccessToken Schema
-const AccessTokenModelDB = require('../Models/accessTokenModel');
+// Use accessTokenModelDB (MongoDB Schema)
+const accessTokenModelDB = require('../Models/accessTokenModel');
 
 const getAllAccessTokens = async () => {
     try {
-        const allAccessTokens = await AccessTokenModelDB.find({}).select("-_id -__v");
+        const allAccessTokens = await accessTokenModelDB.find({}).select("-_id -__v");
         if (allAccessTokens.length === 0) {
             return null;
         }
@@ -25,7 +25,7 @@ const getAllAccessTokens = async () => {
 
 const accessTokenExist = async (userEmail) => {
     try {
-        const accessTokenExists = await AccessTokenModelDB.exists({ email: userEmail });
+        const accessTokenExists = await accessTokenModelDB.exists({ email: userEmail });
         return accessTokenExists;
     } catch (err) {
         console.log("accessTokenExist-Catch Error: ", err);
@@ -35,7 +35,7 @@ const accessTokenExist = async (userEmail) => {
 
 const getAccessToken = async (userEmail) => {
     try {
-        const accessTokenFound = await AccessTokenModelDB.findOne({ email: userEmail }).select("-_id -__v");
+        const accessTokenFound = await accessTokenModelDB.findOne({ email: userEmail }).select("-_id -__v");
         if (!accessTokenFound){
             return accessTokenFound;
         }
@@ -48,7 +48,7 @@ const getAccessToken = async (userEmail) => {
 
 const createAccessToken = async (userData) => {
      // Declare new RefreshToken object with data received
-    const newAccessToken = new AccessTokenModelDB();
+    const newAccessToken = new accessTokenModelDB();
     newAccessToken.email = userData.email;
     // Generate a new access token value
     const generatedAccessToken = await accessTokenHandler.signAccessToken(userData);
@@ -89,7 +89,7 @@ const updateAccessToken = async (userData) => {
 
     // Update Access Token in database
     try {
-        await AccessTokenModelDB.updateOne({ email: userData.email }, accessTokenData);
+        await accessTokenModelDB.updateOne({ email: userData.email }, accessTokenData);
         return accessTokenData.accessToken;
     } catch (err) {
         console.log("updateAccessToken-Catch Error: ", err);
@@ -100,7 +100,7 @@ const updateAccessToken = async (userData) => {
 const deleteAccessToken = async (userEmail) => {
     // Delete RefreshToken in database
     try {
-        await AccessTokenModelDB.deleteOne({ email: userEmail });
+        await accessTokenModelDB.deleteOne({ email: userEmail });
         return true;
     } catch (err) {
         console.log("deleteAccessToken-Catch Error: ", err);

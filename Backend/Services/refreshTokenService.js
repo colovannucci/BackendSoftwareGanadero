@@ -3,7 +3,7 @@
 
 // Require handler http messages
 const httpMsgHandler = require('../Helpers/handleHttpMessage');
-// Create an instance of Refresh Token data refresh layer
+// Create an instance of refreshTokenDAL (data access layer)
 const refreshTokenDAL = require('../DataRefresh/refreshTokenDAL');
 
 const getAllRefreshTokens = async () => {

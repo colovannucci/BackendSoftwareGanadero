@@ -2,13 +2,13 @@
 'use strict';
 
 // Create an instance of User Service
-const systemControlServices = require('../Services/systemControlService');
+const systemControlService = require('../Services/systemControlService');
 
 const signUp = async (req, res) => {
     // Collect body fields with user data
     const { body } = req;
 
-    const signedUp = await systemControlServices.signUp(body);
+    const signedUp = await systemControlService.signUp(body);
     res.status(signedUp.code).send(signedUp);
 }
 
@@ -16,7 +16,7 @@ const signIn = async (req, res) => {
     // Collect body fields with user data
     const { body } = req;
 
-    const signedIn = await systemControlServices.signIn(body);
+    const signedIn = await systemControlService.signIn(body);
     res.status(signedIn.code).send(signedIn);
 }
 
@@ -24,7 +24,7 @@ const signOut = async (req, res) => {
     // Collect body fields with user data
     const { body } = req;
 
-    const signedOut = await systemControlServices.signOut(body);
+    const signedOut = await systemControlService.signOut(body);
     res.status(signedOut.code).send(signedOut);
 }
 
@@ -32,7 +32,7 @@ const generateNewAccessToken = async (req, res) => {
     // Collect body fields with user data
     const { body } = req;
 
-    const accessTokenGenerated = await systemControlServices.generateNewAccessToken(body);
+    const accessTokenGenerated = await systemControlService.generateNewAccessToken(body);
     res.status(accessTokenGenerated.code).send(accessTokenGenerated);
 }
 
@@ -40,7 +40,7 @@ const blockUser = async (req, res) => {
     // Collect body fields with user data
     const { body } = req;
 
-    const blockUser = await systemControlServices.blockUser(body);
+    const blockUser = await systemControlService.blockUser(body);
     res.status(blockUser.code).send(blockUser);
 }
 
@@ -48,7 +48,7 @@ const unblockUser = async (req, res) => {
     // Collect body fields with user data
     const { body } = req;
 
-    const unblockUser = await systemControlServices.unblockUser(body);
+    const unblockUser = await systemControlService.unblockUser(body);
     res.status(unblockUser.code).send(unblockUser);
 }
 

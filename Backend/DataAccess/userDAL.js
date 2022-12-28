@@ -7,25 +7,12 @@ const { v4: uuid } = require("uuid");
 const dateHandler = require('../Helpers/handleDate');
 // Require handler bcrypt password
 const pswHandler = require('../Helpers/handlePassword');
-// Use MongoDB User Schema
-const UserModelDB = require('../Models/userModel');
-
-const getAllUsers = async () => {
-    try {
-        const allUsers = await UserModelDB.find({}).select("-_id -__v");
-        if (allUsers.length === 0) {
-            return null;
-        }
-        return allUsers;
-    } catch (err) {
-        console.log("getAllUsers-Catch Error: ", err);
-        return new Error(err.message);
-    }
-}
+// Use userModelDB (MongoDB Schema)
+const userModelDB = require('../Models/userModelDB');
 
 const userExist = async (userEmail) => {
     try {
-        const userExists = await UserModelDB.exists({ email: userEmail });
+        const userExists = await userModelDB.exists({ email: userEmail });
         return userExists;
     } catch (err) {
         console.log("userExist-Catch Error: ", err);
@@ -35,7 +22,7 @@ const userExist = async (userEmail) => {
 
 const getUser = async (userEmail) => {
     try {
-        const userFound = await UserModelDB.findOne({ email: userEmail }).select("-_id -__v");
+        const userFound = await userModelDB.findOne({ email: userEmail }).select("-_id -__v");
         return userFound;
     } catch (err) {
         console.log("getUser-Catch Error: ", err);
@@ -45,7 +32,7 @@ const getUser = async (userEmail) => {
 
 const createUser = async (userData) => {
     // Declare new user object with data received
-    const newUser = new UserModelDB();
+    const newUser = new userModelDB();
     newUser.email = userData.email;
     newUser.name = userData.name;
 
@@ -95,7 +82,7 @@ const updateUser = async (userEmail, userData) => {
 
     // Update user in database
     try {
-        await UserModelDB.updateOne({ email: userEmail }, userData);
+        await userModelDB.updateOne({ email: userEmail }, userData);
         return true;
     } catch (err) {
         console.log("updateUser-Catch Error: ", err);
@@ -106,7 +93,7 @@ const updateUser = async (userEmail, userData) => {
 const deleteUser = async (userEmail) => {
     // Delete user in database
     try {
-        await UserModelDB.deleteOne({ email: userEmail });
+        await userModelDB.deleteOne({ email: userEmail });
         return true;
     } catch (err) {
         console.log("deleteUser-Catch Error: ", err);
@@ -116,7 +103,7 @@ const deleteUser = async (userEmail) => {
 
 const getUserPassword = async (userEmail) => {
     try {
-        const userData = await UserModelDB.findOne({email: userEmail}).select("password");
+        const userData = await userModelDB.findOne({email: userEmail}).select("password");
         return userData.password;
     } catch (err) {
         console.log("getUserPassword-Catch Error: ", err);
@@ -129,7 +116,7 @@ const updateLoginTime = async (userEmail) => {
     const loginTime = dateHandler.getStrDateNow();
     // Update the last login time in database
     try {
-        await UserModelDB.updateOne({ email: userEmail }, { lastLoginTime: loginTime });
+        await userModelDB.updateOne({ email: userEmail }, { lastLoginTime: loginTime });
         return true;
     } catch (err) {
         console.log("updateLastLoginTime-Catch Error: ", err);
@@ -142,7 +129,7 @@ const updateLogoutTime = async (userEmail) => {
     const logoutTime = dateHandler.getStrDateNow();
     // Update the last logout time in database
     try {
-        await UserModelDB.updateOne({ email: userEmail }, { lastLogoutTime: logoutTime });
+        await userModelDB.updateOne({ email: userEmail }, { lastLogoutTime: logoutTime });
         return true;
     } catch (err) {
         console.log("updateLogoutTime-Catch Error: ", err);
@@ -153,7 +140,7 @@ const updateLogoutTime = async (userEmail) => {
 const blockUser = async (userEmail) => {
     // Update user blocked status in database
     try {
-        await UserModelDB.updateOne({ email: userEmail }, { isBlocked: true });
+        await userModelDB.updateOne({ email: userEmail }, { isBlocked: true });
         return true;
     } catch (err) {
         console.log("blockUser-Catch Error: ", err);
@@ -164,7 +151,7 @@ const blockUser = async (userEmail) => {
 const unblockUser = async (userEmail) => {
     // Update user blocked status in database
     try {
-        await UserModelDB.updateOne({ email: userEmail }, { isBlocked: false });
+        await userModelDB.updateOne({ email: userEmail }, { isBlocked: false });
         return true;
     } catch (err) {
         console.log("unblockUser-Catch Error: ", err);
@@ -174,7 +161,7 @@ const unblockUser = async (userEmail) => {
 
 const getUserBlockedStatus = async (userEmail) => {
     try {
-        const userData = await UserModelDB.findOne({email: userEmail}).select("isBlocked");
+        const userData = await userModelDB.findOne({email: userEmail}).select("isBlocked");
         return userData.isBlocked;
     } catch (err) {
         console.log("getUserBlockedStatus-Catch Error: ", err);
@@ -187,7 +174,7 @@ const updateBlockedTime = async (userEmail) => {
     const bloquedTime = dateHandler.getStrDateNow();
     // Update the last login time in database
     try {
-        await UserModelDB.updateOne({ email: userEmail }, { lastBlockedTime: bloquedTime });
+        await userModelDB.updateOne({ email: userEmail }, { lastBlockedTime: bloquedTime });
         return true;
     } catch (err) {
         console.log("updateBlockedTime-Catch Error: ", err);
@@ -200,7 +187,7 @@ const updateUnblockedTime = async (userEmail) => {
     const unbloquedTime = dateHandler.getStrDateNow();
     // Update the last logout time in database
     try {
-        await UserModelDB.updateOne({ email: userEmail }, { lastUnblockedTime: unbloquedTime });
+        await userModelDB.updateOne({ email: userEmail }, { lastUnblockedTime: unbloquedTime });
         return true;
     } catch (err) {
         console.log("updateUnblockedTime-Catch Error: ", err);
@@ -209,7 +196,6 @@ const updateUnblockedTime = async (userEmail) => {
 }
 
 module.exports = {
-    getAllUsers,
     userExist,
     getUser,
     createUser,

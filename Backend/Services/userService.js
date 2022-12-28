@@ -3,13 +3,13 @@
 
 // Require handler http messages
 const httpMsgHandler = require('../Helpers/handleHttpMessage');
-// Require user validator fields
+// Require userValidator functions
 const userValidator = require('../Validators/userValidator');
-// Create an instance of RefreshToken data access layer
+// Create an instance of refreshTokenDAL (data access layer)
 const refreshTokenDAL = require('../DataAccess/refreshTokenDAL');
-// Create an instance of AccessToken data access layer
+// Create an instance of accessTokenDAL (data access layer)
 const accessTokenDAL = require('../DataAccess/accessTokenDAL');
-// Create an instance of User data access layer
+// Create an instance of userDAL (data access layer)
 const userDAL = require('../DataAccess/userDAL');
 
 const getUser = async (userData) => {

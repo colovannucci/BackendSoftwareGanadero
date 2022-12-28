@@ -3,7 +3,7 @@
 
 // Require handler http messages
 const httpMsgHandler = require('../Helpers/handleHttpMessage');
-// Create an instance of User data access layer
+// Create an instance of userDAL (data access layer)
 const userDAL = require('../DataAccess/userDAL');
 
 const userExist = async (req, res, next) => {
