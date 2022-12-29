@@ -8,7 +8,7 @@ const accessTokenHandler = require('../Helpers/handleAccessToken');
 // Require handler moment dates
 const dateHandler = require('../Helpers/handleDate');
 // Use accessTokenModelDB (MongoDB Schema)
-const accessTokenModelDB = require('../Models/accessTokenModel');
+const accessTokenModelDB = require('../Models/accessTokenModelDB');
 
 const getAllAccessTokens = async () => {
     try {

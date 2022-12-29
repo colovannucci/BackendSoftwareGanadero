@@ -40,13 +40,13 @@ const deleteAccessToken = async (req, res) => {
     res.status(accessTokenDeleted.code).send(accessTokenDeleted);
 }
 
-const test = (req, res) => {
+const testRoutes = (req, res) => {
     console.log('Access token Routes connected successfully');
     res.status(200).send('Access token Routes connected successfully');
 }
 
 module.exports = {
-    test,
+    testRoutes,
     getAllAccessTokens,
     getAccessTokenByEmail,
     createAccessToken,

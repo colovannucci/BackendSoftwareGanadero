@@ -49,4 +49,6 @@ const mainStart = async () => {
   }
 }
 
-module.exports = mainStart;
+module.exports = {
+  mainStart
+};

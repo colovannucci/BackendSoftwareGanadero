@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-    email: { type: String, unique: true, required: true, lowercase: true }, // "lowercase: true" to make email lowercase
+    email: { type: String, unique: true, required: true, lowercase: true }, // "lowercase: true" to make email lowercase // "unique: true" to create an unique index of the field
     name: { type: String, required: true },
     password: { type: String, required: true, select: false }, // "select: false" to avoid showing the value in the JSON response
     createdId: { type: String, select: false },

@@ -8,85 +8,88 @@ const establishmentValidator = require('../Validators/establishmentValidator');
 // Create an instance of establishmentDAL (data access layer)
 const establishmentDAL = require('../DataAccess/establishmentDAL');
 
-const getAllEstablishments = async (userData) => {
+const getAllEstablishments = async (establishmentData) => {
     // Check if user email was provided
-    if (!userData.email){
+    if (!establishmentData.email){
         return httpMsgHandler.code400("User email was not provided");
     }
     
     // Search user in database
-    const userFound = await establishmentDAL.getAllEstablishments(userData.email);
+    const userFound = await establishmentDAL.getAllEstablishments(establishmentData.email);
     if (userFound instanceof Error) {
         return httpMsgHandler.code500('Error getting User', userFound.message);
     }
     
     // Create an object to show user found
-    const userDataValues = {
+    const establishmentDataValues = {
         user: userFound
     };
 
-    return httpMsgHandler.code200("User found successfully", userDataValues);
+    return httpMsgHandler.code200("User found successfully", establishmentDataValues);
 }
 
-const getEstablishment = async (userData) => {
+const getEstablishment = async (establishmentData) => {
     // Check if user email was provided
-    if (!userData.email){
+    if (!establishmentData.email){
         return httpMsgHandler.code400("User email was not provided");
     }
     
     // Search user in database
-    const userFound = await establishmentDAL.getEstablishment(userData.email);
+    const userFound = await establishmentDAL.getEstablishment(establishmentData.email);
     if (userFound instanceof Error) {
         return httpMsgHandler.code500('Error getting User', userFound.message);
     }
     
     // Create an object to show user found
-    const userDataValues = {
+    const establishmentDataValues = {
         user: userFound
     };
 
-    return httpMsgHandler.code200("User found successfully", userDataValues);
+    return httpMsgHandler.code200("User found successfully", establishmentDataValues);
 }
 
-const createEstablishment = async (userData) => {
+const createEstablishment = async (establishmentData) => {
+    /*
     // Check if user email was provided
-    if (!userData.email){
+    if (!establishmentData.email){
         return httpMsgHandler.code400("User email was not provided");
     }
-    
-    // Search user in database
-    const userFound = await establishmentDAL.createEstablishment(userData.email);
-    if (userFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting User', userFound.message);
+    */
+    // VALIDANCION DE CAMPOS, ETC
+
+    // Save establishment in database
+    const establishmentCreated = await establishmentDAL.createEstablishment(establishmentData);
+    if (establishmentCreated instanceof Error) {
+        return httpMsgHandler.code500('Error creating Establishment', establishmentCreated.message);
     }
     
     // Create an object to show user found
-    const userDataValues = {
-        user: userFound
+    const establishmentDataValues = {
+        establishment: establishmentCreated
     };
 
-    return httpMsgHandler.code201('User Signed Up successfully', userSaved);
+    return httpMsgHandler.code201('Establishment Created successfully', establishmentDataValues);
 }
 
-const updateEstablishment = async (userData) => {
+const updateEstablishment = async (establishmentData) => {
     // Check if user email was provided
-    if (!userData.email){
+    if (!establishmentData.email){
         return httpMsgHandler.code400("User email was not provided");
     }
 
     // Collect user email value
-    const userEmail = userData.email;
+    const userEmail = establishmentData.email;
     // Remove email field from updatable data
-    delete userData.email;
+    delete establishmentData.email;
 
     // Check if body has only valid fields
-    const hasUpdatableFields = await establishmentValidator.hasUpdatableFields(userData);
+    const hasUpdatableFields = await establishmentValidator.hasUpdatableFields(establishmentData);
     if (!hasUpdatableFields) {
         return httpMsgHandler.code400("Invalid fields added on body");
     }
     
     // Update user in database
-    const userUpdated = await establishmentDAL.updateEstablishment(userEmail, userData);
+    const userUpdated = await establishmentDAL.updateEstablishment(userEmail, establishmentData);
     if (userUpdated instanceof Error) {
         return httpMsgHandler.code500('Error updating User', userUpdated.message);
     }
@@ -105,14 +108,14 @@ const updateEstablishment = async (userData) => {
     return httpMsgHandler.code200('User updated successfully', updatedUser);
 }
 
-const deleteEstablishment = async (userData) => {
+const deleteEstablishment = async (establishmentData) => {
     // Check if user email was provided
-    if (!userData.email){
+    if (!establishmentData.email){
         return httpMsgHandler.code400("User email was not provided");
     }
     
     // Delete user in database
-    const userDeleted = await establishmentDAL.deleteEstablishment(userData.email);
+    const userDeleted = await establishmentDAL.deleteEstablishment(establishmentData.email);
     if (userDeleted instanceof Error) {
         return httpMsgHandler.code500('Error deleting User', userDeleted.message);
     }

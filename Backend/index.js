@@ -2,9 +2,9 @@
 'use strict'
 
 // Require to collect DB configuration
-const connectDB = require('./dbConfig');
-await connectDB();
+const dbConfig = require('./dbConfig');
+dbConfig.connectDB();
 
 // Require to collect application configuration
-const mainStart = require('./application');
-await mainStart();
+const application = require('./application');
+application.mainStart();

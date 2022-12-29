@@ -44,13 +44,13 @@ const deleteEstablishment = async (req, res) => {
     res.status(establishmentDeleted.code).send(establishmentDeleted);
 }
 
-const test = (req, res) => {
+const testRoutes = (req, res) => {
     console.log('Establishment Routes connected successfully');
     res.status(200).send('Establishment Routes connected successfully');
 }
 
 module.exports = {
-    test,
+    testRoutes,
     getAllEstablishments,
     getEstablishment,
     createEstablishment,

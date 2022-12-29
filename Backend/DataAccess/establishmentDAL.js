@@ -45,33 +45,23 @@ const getEstablishment = async (userEmail) => {
 
 const createEstablishment = async (userData) => {
     // Declare new user object with data received
-    const newUser = new establishmentModelDB();
-    newUser.email = userData.email;
-    newUser.name = userData.name;
-
-    // Encrypt password
-    const hashedPassword = await pswHandler.encryptPassword(userData.password);
-    if (hashedPassword instanceof Error) {
-        return httpMsgHandler.code500('Error hashing Password', hashedPassword.message);
-    }
-    // Replace the password with the new password
-    newUser.password = hashedPassword;
+    const newEstablishment = new establishmentModelDB();
+    newEstablishment.idUsuario = userData.idUsuario;
+    newEstablishment.nombreEstablecimiento = userData.nombreEstablecimiento;
+    newEstablishment.nombreProductor = userData.nombreProductor;
+    newEstablishment.dicoseFisico = userData.dicoseFisico;
+    newEstablishment.rubroPrincipal = userData.rubroPrincipal;
+    newEstablishment.cantidadDicosePropiedad = userData.cantidadDicosePropiedad;
+    newEstablishment.valoresDicosePropiedad = userData.valoresDicosePropiedad;
 
     // Generate defined values to folowing attributes
-    newUser.createdId = uuid();
-    newUser.createdAtTime = dateHandler.getStrDateNow();
-    newUser.updatedAtTime = "";
-    newUser.lastLoginTime = "";
-    newUser.lastLogoutTime = "";
-    newUser.isBlocked = false;
-    newUser.lastBlockedTime = "";
-    newUser.lastUnblockedTime = "";
+    newEstablishment.createdId = uuid();
+    newEstablishment.createdAtTime = dateHandler.getStrDateNow();
+    newEstablishment.updatedAtTime = "";
     
     // Save new user in database
     try {
-        await newUser.save();
-        // Delete password from returned object for security reasons
-        delete userData.password;
+        await newEstablishment.save();
         return userData;
     } catch (err) {
         console.log("createEstablishment-Catch Error: ", err);

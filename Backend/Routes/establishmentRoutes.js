@@ -7,12 +7,12 @@ const establishmentController = require("../Controllers/establishmentController"
 
 // Protect the routes with an db connection middleware.
 const dbConnectionMiddleware = require("../Middlewares/dbConnectionMiddleware");
-userAPIRouter.use(dbConnectionMiddleware);
+establishmentAPIRouter.use(dbConnectionMiddleware);
 
 // Protect the routes with an content type header middleware.
 const contentTypeMiddleware = require("../Middlewares/contentTypeMiddleware");
-userAPIRouter.use(contentTypeMiddleware.hasContentTypeHeader);
-userAPIRouter.use(contentTypeMiddleware.isApplicationJson);
+establishmentAPIRouter.use(contentTypeMiddleware.hasContentTypeHeader);
+establishmentAPIRouter.use(contentTypeMiddleware.isApplicationJson);
 
 establishmentAPIRouter
   .post("/get/all", establishmentController.getAllEstablishments)

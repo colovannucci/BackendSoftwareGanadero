@@ -28,13 +28,13 @@ const deleteUser = async (req, res) => {
     res.status(userDeleted.code).send(userDeleted);
 }
 
-const test = (req, res) => {
+const testRoutes = (req, res) => {
     console.log('User Routes connected successfully');
     res.status(200).send('User Routes connected successfully');
 }
 
 module.exports = {
-    test,
+    testRoutes,
     getUser,
     updateUser,
     deleteUser

@@ -52,13 +52,13 @@ const unblockUser = async (req, res) => {
     res.status(unblockUser.code).send(unblockUser);
 }
 
-const test = (req, res) => {
+const testRoutes = (req, res) => {
     console.log('System Routes connected successfully');
     res.status(200).send('System Routes connected successfully');
 }
 
 module.exports = {
-    test,
+    testRoutes,
     signUp,
     signIn,
     signOut,

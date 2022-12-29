@@ -40,13 +40,13 @@ const deleteRefreshToken = async (req, res) => {
     res.status(refreshTokenDeleted.code).send(refreshTokenDeleted);
 }
 
-const test = (req, res) => {
+const testRoutes = (req, res) => {
     console.log('Refresh token Routes connected successfully');
     res.status(200).send('Refresh token Routes connected successfully');
 }
 
 module.exports = {
-    test,
+    testRoutes,
     getAllRefreshTokens,
     getRefreshTokenByEmail,
     createRefreshToken,
