@@ -45,7 +45,6 @@ const hasUpdatableFields = async (establishmentData) => {
     return isValid;
 }
 
-
 const esRubroValido = async (establishmentRubroPrincipal) => {
     // Specify valid fields
     const rubrosValidos = ["Cria", "Recria", "Cria y recria", "Invernada", "Ciclo completo", "Feedlot"];

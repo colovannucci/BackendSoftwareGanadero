@@ -23,8 +23,7 @@ const establishmentExist = async (establishmentDicoseFisico) => {
 const getAllEstablishments = async (userEmail) => {
     try {
         const allEstablishmentsFound = await establishmentModelDB.find({ email: userEmail }).select("-_id -__v");
-        console.log("allEstablishments");
-        console.log(allEstablishmentsFound);
+        // Check if the list retreived has values
         if (allEstablishmentsFound.length === 0) {
             return null;
         }
@@ -38,6 +37,8 @@ const getAllEstablishments = async (userEmail) => {
 const getEstablishment = async (establishmentDicoseFisico) => {
     try {
         const establishmentFound = await establishmentModelDB.findOne({ dicoseFisico: establishmentDicoseFisico }).select("-_id -__v");
+        console.log("establishmentFound");
+        console.log(establishmentFound);
         return establishmentFound;
     } catch (err) {
         console.log("getEstablishment-Catch Error: ", err);

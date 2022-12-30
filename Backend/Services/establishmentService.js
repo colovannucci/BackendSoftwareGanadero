@@ -46,11 +46,14 @@ const getEstablishment = async (establishmentData) => {
     }
     
     // Search establishment in database
-    const establishmentFound = await establishmentDAL.getEstablishment(establishmentData.email);
+    const establishmentFound = await establishmentDAL.getEstablishment(establishmentData.dicoseFisico);
     if (establishmentFound instanceof Error) {
         return httpMsgHandler.code500('Error getting Establishment', establishmentFound.message);
     }
-    
+    if (!establishmentFound){
+        return httpMsgHandler.code404("Establishments not found");
+    }
+
     // Create an object to show establishment found
     const establishmentDataValues = {
         establishment: establishmentFound
@@ -66,13 +69,14 @@ const createEstablishment = async (establishmentData) => {
         return httpMsgHandler.code400("Missing fields on body");
     }
     // Check if body has only valid fields
-    const hasValidFields = await establishmentValidator.hasValidFields(establishmentData);
-    if (!hasValidFields) {
+    const hasCreatableFields = await establishmentValidator.hasCreatableFields(establishmentData);
+    if (!hasCreatableFields) {
         return httpMsgHandler.code400("Invalid fields added on body");
     }
 
     // Check if rubroPrincipal value is valid
-    if (!establishmentValidator.esRubroValido(establishmentData.rubroPrincipal)){
+    const esRubroValido = await establishmentValidator.esRubroValido(establishmentData.rubroPrincipal);
+    if (!esRubroValido){
         return httpMsgHandler.code400("Rubro Principal is not valid");
     }
 
@@ -100,6 +104,13 @@ const updateEstablishment = async (establishmentData) => {
         return httpMsgHandler.code400("Establishment Dicose Fisico was not provided");
     }
 
+    // Collect dicoseFisico value
+    const establishmentDicoseFisico = establishmentData.dicoseFisico;
+    // Remove email field from updatable data
+    delete establishmentData.email;
+    // Remove dicoseFisico field from updatable data
+    delete establishmentData.dicoseFisico;
+
     // Check if body has only valid fields
     const hasUpdatableFields = await establishmentValidator.hasUpdatableFields(establishmentData);
     if (!hasUpdatableFields) {
@@ -109,18 +120,12 @@ const updateEstablishment = async (establishmentData) => {
     // Check if body has rubroPrincipal field
     if (establishmentData.rubroPrincipal){
         // Check if rubroPrincipal value is valid
-        if (!establishmentValidator.esRubroValido(establishmentData.rubroPrincipal)){
+        const esRubroValido = await establishmentValidator.esRubroValido(establishmentData.rubroPrincipal);
+        if (!esRubroValido){
             return httpMsgHandler.code400("Rubro Principal is not valid");
         }
     }
     
-    // Collect dicoseFisico value
-    const establishmentDicoseFisico = establishmentData.dicoseFisico;
-    // Remove email field from updatable data
-    delete establishmentData.email;
-    // Remove dicoseFisico field from updatable data
-    delete establishmentData.dicoseFisico;
-
     // Update establishment in database
     const establishmentUpdated = await establishmentDAL.updateEstablishment(establishmentDicoseFisico, establishmentData);
     if (establishmentUpdated instanceof Error) {
@@ -128,7 +133,7 @@ const updateEstablishment = async (establishmentData) => {
     }
 
     // Search establishment in database
-    const establishmentFound = await establishmentDAL.getEstablishment(establishmentData.email);
+    const establishmentFound = await establishmentDAL.getEstablishment(establishmentDicoseFisico);
     if (establishmentFound instanceof Error) {
         // The establishment was updated successfully but the server had an error retrieving the values
         establishmentFound = "Error getting updated Establishment data";
