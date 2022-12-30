@@ -1,7 +1,7 @@
 // Use restrictive JS mode to avoid silence errors of the project
 'use strict';
 
-// Create an instance of User Service
+// Create an instance of systemControlService
 const systemControlService = require('../Services/systemControlService');
 
 const signUp = async (req, res) => {

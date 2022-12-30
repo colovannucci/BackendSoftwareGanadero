@@ -5,54 +5,56 @@
 const { v4: uuid } = require("uuid");
 // Require handler moment dates
 const dateHandler = require('../Helpers/handleDate');
-// Require handler bcrypt password
-const pswHandler = require('../Helpers/handlePassword');
+// Require establishmentValidator functions
+const establishmentValidator = require('../Validators/establishmentValidator');
 // Use establishmentModelDB (MongoDB Schema)
 const establishmentModelDB = require('../Models/establishmentModelDB');
 
-const userExist = async (userEmail) => {
+const establishmentExist = async (establishmentDicoseFisico) => {
     try {
-        const userExists = await establishmentModelDB.exists({ email: userEmail });
-        return userExists;
+        const establishmentExist = await establishmentModelDB.exists({ dicoseFisico: establishmentDicoseFisico });
+        return establishmentExist;
     } catch (err) {
-        console.log("userExist-Catch Error: ", err);
+        console.log("establishmentExist-Catch Error: ", err);
         return new Error(err.message);
     }
 }
 
-const getAllEstablishments = async () => {
+const getAllEstablishments = async (userEmail) => {
     try {
-        const allUsers = await establishmentModelDB.find({}).select("-_id -__v");
-        if (allUsers.length === 0) {
+        const allEstablishmentsFound = await establishmentModelDB.find({ email: userEmail }).select("-_id -__v");
+        console.log("allEstablishments");
+        console.log(allEstablishmentsFound);
+        if (allEstablishmentsFound.length === 0) {
             return null;
         }
-        return allUsers;
+        return allEstablishmentsFound;
     } catch (err) {
         console.log("getAllEstablishments-Catch Error: ", err);
         return new Error(err.message);
     }
 }
 
-const getEstablishment = async (userEmail) => {
+const getEstablishment = async (establishmentDicoseFisico) => {
     try {
-        const userFound = await establishmentModelDB.findOne({ email: userEmail }).select("-_id -__v");
-        return userFound;
+        const establishmentFound = await establishmentModelDB.findOne({ dicoseFisico: establishmentDicoseFisico }).select("-_id -__v");
+        return establishmentFound;
     } catch (err) {
         console.log("getEstablishment-Catch Error: ", err);
         return new Error(err.message);
     }
 }
 
-const createEstablishment = async (userData) => {
+const createEstablishment = async (establishmentData) => {
     // Declare new user object with data received
     const newEstablishment = new establishmentModelDB();
-    newEstablishment.idUsuario = userData.idUsuario;
-    newEstablishment.nombreEstablecimiento = userData.nombreEstablecimiento;
-    newEstablishment.nombreProductor = userData.nombreProductor;
-    newEstablishment.dicoseFisico = userData.dicoseFisico;
-    newEstablishment.rubroPrincipal = userData.rubroPrincipal;
-    newEstablishment.cantidadDicosePropiedad = userData.cantidadDicosePropiedad;
-    newEstablishment.valoresDicosePropiedad = userData.valoresDicosePropiedad;
+    newEstablishment.email = establishmentData.email;
+    newEstablishment.nombreEstablecimiento = establishmentData.nombreEstablecimiento;
+    newEstablishment.nombreProductor = establishmentData.nombreProductor;
+    newEstablishment.dicoseFisico = establishmentData.dicoseFisico;
+    newEstablishment.rubroPrincipal = establishmentData.rubroPrincipal;
+    newEstablishment.cantidadDicosePropiedad = establishmentData.cantidadDicosePropiedad;
+    newEstablishment.valoresDicosePropiedad = establishmentData.valoresDicosePropiedad;
 
     // Generate defined values to folowing attributes
     newEstablishment.createdId = uuid();
@@ -62,30 +64,20 @@ const createEstablishment = async (userData) => {
     // Save new user in database
     try {
         await newEstablishment.save();
-        return userData;
+        return establishmentData;
     } catch (err) {
         console.log("createEstablishment-Catch Error: ", err);
         return new Error(err.message);
     }
 }
 
-const updateEstablishment = async (userEmail, userData) => {
-    // Check if the user wants to update his password
-    if (userData.password){
-        // Encrypt password
-        const hashedPassword = await pswHandler.encryptPassword(userData.password);
-        if (hashedPassword instanceof Error) {
-            return new Error(hashedPassword.message);
-        }
-        // Replace the password with the new password
-        userData.password = hashedPassword;
-    }
+const updateEstablishment = async (establishmentDicoseFisico, establishmentData) => {
     // Add field updatedAt
-    userData.updatedAt = dateHandler.getStrDateNow();
+    establishmentData.updatedAt = dateHandler.getStrDateNow();
 
     // Update user in database
     try {
-        await establishmentModelDB.updateOne({ email: userEmail }, userData);
+        await establishmentModelDB.updateOne({ dicoseFisico: establishmentDicoseFisico }, establishmentData);
         return true;
     } catch (err) {
         console.log("updateEstablishment-Catch Error: ", err);
@@ -93,10 +85,10 @@ const updateEstablishment = async (userEmail, userData) => {
     }
 }
 
-const deleteEstablishment = async (userEmail) => {
+const deleteEstablishment = async (establishmentDicoseFisico) => {
     // Delete user in database
     try {
-        await establishmentModelDB.deleteOne({ email: userEmail });
+        await establishmentModelDB.deleteOne({ dicoseFisico: establishmentDicoseFisico });
         return true;
     } catch (err) {
         console.log("deleteEstablishment-Catch Error: ", err);
@@ -105,7 +97,7 @@ const deleteEstablishment = async (userEmail) => {
 }
 
 module.exports = {
-    userExist,
+    establishmentExist,
     getAllEstablishments,
     getEstablishment,
     createEstablishment,

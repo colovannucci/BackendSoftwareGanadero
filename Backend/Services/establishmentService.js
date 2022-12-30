@@ -9,53 +9,72 @@ const establishmentValidator = require('../Validators/establishmentValidator');
 const establishmentDAL = require('../DataAccess/establishmentDAL');
 
 const getAllEstablishments = async (establishmentData) => {
-    // Check if user email was provided
+    // Check if email was provided
     if (!establishmentData.email){
-        return httpMsgHandler.code400("User email was not provided");
+        return httpMsgHandler.code400("Establishment email was not provided");
+    }
+    // Check if dicoseFisico was provided
+    if (!establishmentData.dicoseFisico){
+        return httpMsgHandler.code400("Establishment Dicose Fisico was not provided");
     }
     
-    // Search user in database
-    const userFound = await establishmentDAL.getAllEstablishments(establishmentData.email);
-    if (userFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting User', userFound.message);
+    // Search establishment in database
+    const allEstablishmentsFound = await establishmentDAL.getAllEstablishments(establishmentData.email);
+    if (allEstablishmentsFound instanceof Error) {
+        return httpMsgHandler.code500('Error getting All Establishments', allEstablishmentsFound.message);
+    }
+    if (!allEstablishmentsFound){
+        return httpMsgHandler.code404("No Establishments found");
     }
     
-    // Create an object to show user found
+    // Create an object to show establishment found
     const establishmentDataValues = {
-        user: userFound
+        establishments: allEstablishmentsFound
     };
 
-    return httpMsgHandler.code200("User found successfully", establishmentDataValues);
+    return httpMsgHandler.code200("All Establishments found successfully", establishmentDataValues);
 }
 
 const getEstablishment = async (establishmentData) => {
-    // Check if user email was provided
+    // Check if email was provided
     if (!establishmentData.email){
-        return httpMsgHandler.code400("User email was not provided");
+        return httpMsgHandler.code400("Establishment email was not provided");
+    }
+    // Check if dicoseFisico was provided
+    if (!establishmentData.dicoseFisico){
+        return httpMsgHandler.code400("Establishment Dicose Fisico was not provided");
     }
     
-    // Search user in database
-    const userFound = await establishmentDAL.getEstablishment(establishmentData.email);
-    if (userFound instanceof Error) {
-        return httpMsgHandler.code500('Error getting User', userFound.message);
+    // Search establishment in database
+    const establishmentFound = await establishmentDAL.getEstablishment(establishmentData.email);
+    if (establishmentFound instanceof Error) {
+        return httpMsgHandler.code500('Error getting Establishment', establishmentFound.message);
     }
     
-    // Create an object to show user found
+    // Create an object to show establishment found
     const establishmentDataValues = {
-        user: userFound
+        establishment: establishmentFound
     };
 
-    return httpMsgHandler.code200("User found successfully", establishmentDataValues);
+    return httpMsgHandler.code200("Establishment found successfully", establishmentDataValues);
 }
 
 const createEstablishment = async (establishmentData) => {
-    /*
-    // Check if user email was provided
-    if (!establishmentData.email){
-        return httpMsgHandler.code400("User email was not provided");
+    // Check if body has all required fields
+    const hasRequiredFields = await establishmentValidator.hasRequiredFields(establishmentData);
+    if (!hasRequiredFields) {
+        return httpMsgHandler.code400("Missing fields on body");
     }
-    */
-    // VALIDANCION DE CAMPOS, ETC
+    // Check if body has only valid fields
+    const hasValidFields = await establishmentValidator.hasValidFields(establishmentData);
+    if (!hasValidFields) {
+        return httpMsgHandler.code400("Invalid fields added on body");
+    }
+
+    // Check if rubroPrincipal value is valid
+    if (!establishmentValidator.esRubroValido(establishmentData.rubroPrincipal)){
+        return httpMsgHandler.code400("Rubro Principal is not valid");
+    }
 
     // Save establishment in database
     const establishmentCreated = await establishmentDAL.createEstablishment(establishmentData);
@@ -63,7 +82,7 @@ const createEstablishment = async (establishmentData) => {
         return httpMsgHandler.code500('Error creating Establishment', establishmentCreated.message);
     }
     
-    // Create an object to show user found
+    // Create an object to show establishment found
     const establishmentDataValues = {
         establishment: establishmentCreated
     };
@@ -72,55 +91,73 @@ const createEstablishment = async (establishmentData) => {
 }
 
 const updateEstablishment = async (establishmentData) => {
-    // Check if user email was provided
+    // Check if establishment email was provided
     if (!establishmentData.email){
-        return httpMsgHandler.code400("User email was not provided");
+        return httpMsgHandler.code400("Establishment email was not provided");
     }
-
-    // Collect user email value
-    const userEmail = establishmentData.email;
-    // Remove email field from updatable data
-    delete establishmentData.email;
+    // Check if dicoseFisico was provided
+    if (!establishmentData.dicoseFisico){
+        return httpMsgHandler.code400("Establishment Dicose Fisico was not provided");
+    }
 
     // Check if body has only valid fields
     const hasUpdatableFields = await establishmentValidator.hasUpdatableFields(establishmentData);
     if (!hasUpdatableFields) {
         return httpMsgHandler.code400("Invalid fields added on body");
     }
+
+    // Check if body has rubroPrincipal field
+    if (establishmentData.rubroPrincipal){
+        // Check if rubroPrincipal value is valid
+        if (!establishmentValidator.esRubroValido(establishmentData.rubroPrincipal)){
+            return httpMsgHandler.code400("Rubro Principal is not valid");
+        }
+    }
     
-    // Update user in database
-    const userUpdated = await establishmentDAL.updateEstablishment(userEmail, establishmentData);
-    if (userUpdated instanceof Error) {
-        return httpMsgHandler.code500('Error updating User', userUpdated.message);
+    // Collect dicoseFisico value
+    const establishmentDicoseFisico = establishmentData.dicoseFisico;
+    // Remove email field from updatable data
+    delete establishmentData.email;
+    // Remove dicoseFisico field from updatable data
+    delete establishmentData.dicoseFisico;
+
+    // Update establishment in database
+    const establishmentUpdated = await establishmentDAL.updateEstablishment(establishmentDicoseFisico, establishmentData);
+    if (establishmentUpdated instanceof Error) {
+        return httpMsgHandler.code500('Error updating Establishment', establishmentUpdated.message);
     }
 
-    // Search updated user in database
-    const userFound = await establishmentDAL.getEstablishment(userEmail);
-    if (userFound instanceof Error) {
-        // The user was updated successfully but the server had an error retrieving the values
-        userFound = "Error getting updated User data";
+    // Search establishment in database
+    const establishmentFound = await establishmentDAL.getEstablishment(establishmentData.email);
+    if (establishmentFound instanceof Error) {
+        // The establishment was updated successfully but the server had an error retrieving the values
+        establishmentFound = "Error getting updated Establishment data";
     }
-    // Create an object to show updateduser found
-    const updatedUser = {
-        user: userFound
+    // Create an object to show updatedestablishment found
+    const updatedEstablishment = {
+        establishment: establishmentFound
     };
 
-    return httpMsgHandler.code200('User updated successfully', updatedUser);
+    return httpMsgHandler.code200('Establishment updated successfully', updatedEstablishment);
 }
 
 const deleteEstablishment = async (establishmentData) => {
-    // Check if user email was provided
+    // Check if establishment email was provided
     if (!establishmentData.email){
-        return httpMsgHandler.code400("User email was not provided");
+        return httpMsgHandler.code400("Establishment email was not provided");
+    }
+    // Check if dicoseFisico was provided
+    if (!establishmentData.dicoseFisico){
+        return httpMsgHandler.code400("Establishment Dicose Fisico was not provided");
     }
     
-    // Delete user in database
-    const userDeleted = await establishmentDAL.deleteEstablishment(establishmentData.email);
-    if (userDeleted instanceof Error) {
-        return httpMsgHandler.code500('Error deleting User', userDeleted.message);
+    // Delete establishment in database
+    const establishmentDeleted = await establishmentDAL.deleteEstablishment(establishmentData.dicoseFisico);
+    if (establishmentDeleted instanceof Error) {
+        return httpMsgHandler.code500('Error deleting Establishment', establishmentDeleted.message);
     }
 
-    return httpMsgHandler.code200('User deleted successfully');
+    return httpMsgHandler.code200('Establishment deleted successfully');
 }
 
 module.exports = {

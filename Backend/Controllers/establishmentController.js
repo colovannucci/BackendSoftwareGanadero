@@ -1,7 +1,7 @@
 // Use restrictive JS mode to avoid silence errors of the project
 'use strict';
 
-// Create an instance of User Service
+// Create an instance of establishmentService
 const establishmentService = require('../Services/establishmentService');
 
 const getAllEstablishments = async (req, res) => {

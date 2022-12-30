@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const EstablishmentSchema = new Schema({
-    idUsuario: { type: String, required: true, lowercase: true }, // "lowercase: true" to make email lowercase
+    email: { type: String, required: true, lowercase: true }, // "lowercase: true" to make email lowercase
     nombreEstablecimiento: { type: String, required: true },
     nombreProductor: { type: String, required: true },
     dicoseFisico: { type: String, unique: true, required: true }, // "unique: true" to create an unique index of the field
