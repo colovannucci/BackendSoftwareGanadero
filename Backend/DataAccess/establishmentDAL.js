@@ -37,8 +37,6 @@ const getAllEstablishments = async (userEmail) => {
 const getEstablishment = async (establishmentDicoseFisico) => {
     try {
         const establishmentFound = await establishmentModelDB.findOne({ dicoseFisico: establishmentDicoseFisico }).select("-_id -__v");
-        console.log("establishmentFound");
-        console.log(establishmentFound);
         return establishmentFound;
     } catch (err) {
         console.log("getEstablishment-Catch Error: ", err);

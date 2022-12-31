@@ -11,23 +11,19 @@ const establishmentDAL = require('../DataAccess/establishmentDAL');
 const getAllEstablishments = async (establishmentData) => {
     // Check if email was provided
     if (!establishmentData.email){
-        return httpMsgHandler.code400("Establishment email was not provided");
-    }
-    // Check if dicoseFisico was provided
-    if (!establishmentData.dicoseFisico){
-        return httpMsgHandler.code400("Establishment Dicose Fisico was not provided");
+        return httpMsgHandler.code400("User email was not provided");
     }
     
-    // Search establishment in database
+    // Search allEstablishments in database
     const allEstablishmentsFound = await establishmentDAL.getAllEstablishments(establishmentData.email);
     if (allEstablishmentsFound instanceof Error) {
         return httpMsgHandler.code500('Error getting All Establishments', allEstablishmentsFound.message);
     }
     if (!allEstablishmentsFound){
-        return httpMsgHandler.code404("No Establishments found");
+        return httpMsgHandler.code404("No Establishments found of the User");
     }
     
-    // Create an object to show establishment found
+    // Create an object to show allEstablishments found
     const establishmentDataValues = {
         establishments: allEstablishmentsFound
     };
@@ -36,10 +32,6 @@ const getAllEstablishments = async (establishmentData) => {
 }
 
 const getEstablishment = async (establishmentData) => {
-    // Check if email was provided
-    if (!establishmentData.email){
-        return httpMsgHandler.code400("Establishment email was not provided");
-    }
     // Check if dicoseFisico was provided
     if (!establishmentData.dicoseFisico){
         return httpMsgHandler.code400("Establishment Dicose Fisico was not provided");
@@ -51,7 +43,7 @@ const getEstablishment = async (establishmentData) => {
         return httpMsgHandler.code500('Error getting Establishment', establishmentFound.message);
     }
     if (!establishmentFound){
-        return httpMsgHandler.code404("Establishments not found");
+        return httpMsgHandler.code404("Establishment not found");
     }
 
     // Create an object to show establishment found
@@ -91,14 +83,10 @@ const createEstablishment = async (establishmentData) => {
         establishment: establishmentCreated
     };
 
-    return httpMsgHandler.code201('Establishment Created successfully', establishmentDataValues);
+    return httpMsgHandler.code201('Establishment created successfully', establishmentDataValues);
 }
 
 const updateEstablishment = async (establishmentData) => {
-    // Check if establishment email was provided
-    if (!establishmentData.email){
-        return httpMsgHandler.code400("Establishment email was not provided");
-    }
     // Check if dicoseFisico was provided
     if (!establishmentData.dicoseFisico){
         return httpMsgHandler.code400("Establishment Dicose Fisico was not provided");
@@ -147,10 +135,6 @@ const updateEstablishment = async (establishmentData) => {
 }
 
 const deleteEstablishment = async (establishmentData) => {
-    // Check if establishment email was provided
-    if (!establishmentData.email){
-        return httpMsgHandler.code400("Establishment email was not provided");
-    }
     // Check if dicoseFisico was provided
     if (!establishmentData.dicoseFisico){
         return httpMsgHandler.code400("Establishment Dicose Fisico was not provided");
