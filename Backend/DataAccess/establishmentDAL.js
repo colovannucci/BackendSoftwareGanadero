@@ -63,6 +63,8 @@ const createEstablishment = async (establishmentData) => {
     // Save new user in database
     try {
         await newEstablishment.save();
+        // Remove email field from returned data
+        delete establishmentData.email;
         return establishmentData;
     } catch (err) {
         console.log("createEstablishment-Catch Error: ", err);
