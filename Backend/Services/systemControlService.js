@@ -94,8 +94,9 @@ const signIn = async (userCredentials) => {
         return httpMsgHandler.code400("Invalid username or password");
     }
 
-    // Create an empty object to save new tokens generated
-    const userTokens = {
+    // Create an object to show user signed in
+    const userSignedIn = {
+        name: userFound.name,
         accessToken: "", 
         refreshToken: ""
     };
@@ -113,7 +114,7 @@ const signIn = async (userCredentials) => {
         }
 
         // Save access token generated in variable
-        userTokens.accessToken = accessTokenUpdated;
+        userSignedIn.accessToken = accessTokenUpdated;
     } else {
         // Save new access token in database
         const accessTokenSaved = await accessTokenDAL.createAccessToken(userFound);
@@ -122,7 +123,7 @@ const signIn = async (userCredentials) => {
         }
 
         // Save access token generated in variable
-        userTokens.accessToken = accessTokenSaved;
+        userSignedIn.accessToken = accessTokenSaved;
     }
     
     // Verify refresh token in database, if it exists indicate that the user has an active token
@@ -138,7 +139,7 @@ const signIn = async (userCredentials) => {
         }
 
         // Save refresh token generated in variable
-        userTokens.refreshToken = refreshTokenUpdated;
+        userSignedIn.refreshToken = refreshTokenUpdated;
     } else {
         // Save new refresh token in database
         const refreshTokenSaved = await refreshTokenDAL.createRefreshToken(userFound);
@@ -147,7 +148,7 @@ const signIn = async (userCredentials) => {
         }
 
         // Save refresh token generated in variable
-        userTokens.refreshToken = refreshTokenSaved;
+        userSignedIn.refreshToken = refreshTokenSaved;
     }
 
     // Update user with new login datetime in database
@@ -156,7 +157,7 @@ const signIn = async (userCredentials) => {
         return httpMsgHandler.code500('Error saving User Login Time', loginTimeUpdated.message);
     }
 
-    return httpMsgHandler.code200('User Signed In successfully', userTokens);
+    return httpMsgHandler.code200('User Signed In successfully', userSignedIn);
 }
 
 const signOut = async (userData) => {
