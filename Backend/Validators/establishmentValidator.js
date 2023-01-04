@@ -18,13 +18,13 @@ const hasRequiredFields = async (establishmentData) => {
 }
 
 const hasCreatableFields = async (establishmentData) => {
-    // Specify valid fields
-    const validFields = ["email", "nombreEstablecimiento", "nombreProductor", "dicoseFisico", "rubroPrincipal", "cantidadDicosePropiedad", "valoresDicosePropiedad"];
+    // Specify creatableFields
+    const creatableFields = ["email", "nombreEstablecimiento", "nombreProductor", "dicoseFisico", "rubroPrincipal", "cantidadDicosePropiedad", "valoresDicosePropiedad"];
     let isValid= true;
     // Collect all body fields
     Object.keys(establishmentData).forEach(fieldName => {
-        // Check if body has not valid fields
-        if(!validFields.includes(fieldName)){
+        // Check if body has not creatableFields
+        if(!creatableFields.includes(fieldName)){
             isValid = false;
         }
     });
@@ -32,12 +32,12 @@ const hasCreatableFields = async (establishmentData) => {
 }
 
 const hasUpdatableFields = async (establishmentData) => {
-    // Specify valid fields
+    // Specify updatableFields
     const updatableFields = ["nombreEstablecimiento", "nombreProductor", "rubroPrincipal"];
     let isValid= true;
     // Collect all body fields
     Object.keys(establishmentData).forEach(fieldName => {
-        // Check if body has not valid fields
+        // Check if body has not updatableFields
         if(!updatableFields.includes(fieldName)){
             isValid = false;
         }
@@ -46,7 +46,7 @@ const hasUpdatableFields = async (establishmentData) => {
 }
 
 const esRubroValido = async (establishmentRubroPrincipal) => {
-    // Specify valid fields
+    // Specify rubrosValidos
     const rubrosValidos = ["Cria", "Recria", "Cria y recria", "Invernada", "Ciclo completo", "Feedlot"];
     // Check if field value is valid
     if(rubrosValidos.includes(establishmentRubroPrincipal)){

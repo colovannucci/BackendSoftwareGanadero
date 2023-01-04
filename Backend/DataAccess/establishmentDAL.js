@@ -20,9 +20,9 @@ const establishmentExist = async (establishmentDicoseFisico) => {
     }
 }
 
-const getAllEstablishments = async (userEmail) => {
+const getAllEstablishments = async (establishmentEmail) => {
     try {
-        const allEstablishmentsFound = await establishmentModelDB.find({ email: userEmail }).select("-_id -__v");
+        const allEstablishmentsFound = await establishmentModelDB.find({ email: establishmentEmail }).select("-_id -__v");
         // Check if the list retreived has values
         if (allEstablishmentsFound.length === 0) {
             return null;
@@ -45,7 +45,7 @@ const getEstablishment = async (establishmentDicoseFisico) => {
 }
 
 const createEstablishment = async (establishmentData) => {
-    // Declare new user object with data received
+    // Declare new establishment object with data received
     const newEstablishment = new establishmentModelDB();
     newEstablishment.email = establishmentData.email;
     newEstablishment.nombreEstablecimiento = establishmentData.nombreEstablecimiento;
@@ -60,7 +60,7 @@ const createEstablishment = async (establishmentData) => {
     newEstablishment.createdAtTime = dateHandler.getStrDateNow();
     newEstablishment.updatedAtTime = "";
     
-    // Save new user in database
+    // Save new establishment in database
     try {
         await newEstablishment.save();
         // Remove email field from returned data
@@ -76,7 +76,7 @@ const updateEstablishment = async (establishmentDicoseFisico, establishmentData)
     // Add field updatedAt
     establishmentData.updatedAt = dateHandler.getStrDateNow();
 
-    // Update user in database
+    // Update establishment in database
     try {
         await establishmentModelDB.updateOne({ dicoseFisico: establishmentDicoseFisico }, establishmentData);
         return true;
@@ -87,7 +87,7 @@ const updateEstablishment = async (establishmentDicoseFisico, establishmentData)
 }
 
 const deleteEstablishment = async (establishmentDicoseFisico) => {
-    // Delete user in database
+    // Delete establishment in database
     try {
         await establishmentModelDB.deleteOne({ dicoseFisico: establishmentDicoseFisico });
         return true;
