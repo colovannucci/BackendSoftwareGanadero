@@ -65,9 +65,6 @@ const getAnimal = async (animalData) => {
     if (animalFound instanceof Error) {
         return httpMsgHandler.code500('Error getting Animal', animalFound.message);
     }
-    if (!animalFound){
-        return httpMsgHandler.code404("Animal not found");
-    }
 
     // Create an object to show animal found
     const animalDataValues = {

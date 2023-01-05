@@ -18,7 +18,7 @@ animalAPIRouter.use(contentTypeMiddleware.isApplicationJson);
 const userMiddleware = require("../Middlewares/userMiddleware");
 animalAPIRouter.use(userMiddleware.userExist);
 animalAPIRouter.use(userMiddleware.isNotBlocked);
-/*
+
 // Protect routes with an access token middleware.
 const accessTokenMiddleware = require("../Middlewares/accessTokenMiddleware");
 animalAPIRouter.use(accessTokenMiddleware.accessTokenExist);
@@ -28,7 +28,6 @@ const authorizationMiddleware = require("../Middlewares/authorizationMiddleware"
 animalAPIRouter.use(authorizationMiddleware.hasAuthorizationHeader);
 animalAPIRouter.use(authorizationMiddleware.hasBearerToken);
 animalAPIRouter.use(authorizationMiddleware.isAuthorized);
-*/
 
 // Protect all the routes with an animal middleware.
 const animalMiddleware = require("../Middlewares/animalMiddleware");

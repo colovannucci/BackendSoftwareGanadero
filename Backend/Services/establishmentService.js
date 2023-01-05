@@ -42,9 +42,6 @@ const getEstablishment = async (establishmentData) => {
     if (establishmentFound instanceof Error) {
         return httpMsgHandler.code500('Error getting Establishment', establishmentFound.message);
     }
-    if (!establishmentFound){
-        return httpMsgHandler.code404("Establishment not found");
-    }
 
     // Create an object to show establishment found
     const establishmentDataValues = {
