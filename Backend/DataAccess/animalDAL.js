@@ -20,9 +20,9 @@ const animalExist = async (animalNumeroCaravana) => {
     }
 }
 
-const getAllAnimalsByUser = async (animalEmail) => {
+const getAllAnimalsByUser = async (userEmail) => {
     try {
-        const allAnimalsFoundByUser = await animalModelDB.find({ email: animalEmail }).select("-_id -__v");
+        const allAnimalsFoundByUser = await animalModelDB.find({ email: userEmail }).select("-_id -__v");
         // Check if the list retreived has values
         if (allAnimalsFoundByUser.length === 0) {
             return null;
@@ -73,7 +73,7 @@ const createAnimal = async (animalData) => {
     newAnimal.dicoseTenedor = animalData.dicoseTenedor;
     newAnimal.statusVida = animalData.statusVida;
     newAnimal.statusTrazabilidad = animalData.statusTrazabilidad;
-    newAnimal.pesoActual = "";
+    newAnimal.pesoActual = "0";
     newAnimal.disponibleVenta = false;
 
     // Generate defined values to folowing attributes

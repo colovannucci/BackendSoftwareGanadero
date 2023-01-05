@@ -28,6 +28,9 @@ app.use("/api/v1/user", userRoutes);
 const establishmentRoutes = require("./Routes/establishmentRoutes");
 app.use("/api/v1/establishment", establishmentRoutes);
 
+const animalRoutes = require("./Routes/animalRoutes");
+app.use("/api/v1/animal", animalRoutes);
+
 // Send a message indicating the server is working properly
 app.use('/test', (req, res) => {
   //res.send({ code: 204, status: "No Content", message: "Hello World! Welcome!" });

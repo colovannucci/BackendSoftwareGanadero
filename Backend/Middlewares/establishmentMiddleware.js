@@ -7,7 +7,7 @@ const httpMsgHandler = require('../Helpers/handleHttpMessage');
 const establishmentDAL = require('../DataAccess/establishmentDAL');
 
 const establishmentExist = async (req, res, next) => {
-    // Collect user dicoseFisico from request body
+    // Collect dicoseFisico from request body
     const establishmentDicoseFisico = req.body.dicoseFisico;
 
     // Verify establlishment in database

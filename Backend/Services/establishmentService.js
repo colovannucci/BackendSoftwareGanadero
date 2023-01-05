@@ -108,8 +108,8 @@ const updateEstablishment = async (establishmentData) => {
     // Check if body has rubroPrincipal field
     if (establishmentData.rubroPrincipal){
         // Check if rubroPrincipal value is valid
-        const esRubroValido = await establishmentValidator.esRubroValido(establishmentData.rubroPrincipal);
-        if (!esRubroValido){
+        const esRubroPrincipalValido = await establishmentValidator.esRubroPrincipalValido(establishmentData.rubroPrincipal);
+        if (!esRubroPrincipalValido){
             return httpMsgHandler.code400("Rubro Principal is not valid");
         }
     }

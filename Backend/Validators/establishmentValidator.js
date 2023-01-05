@@ -45,7 +45,7 @@ const hasUpdatableFields = async (establishmentData) => {
     return isValid;
 }
 
-const esRubroValido = async (establishmentRubroPrincipal) => {
+const esRubroPrincipalValido = async (establishmentRubroPrincipal) => {
     // Specify rubrosValidos
     const rubrosValidos = ["Cria", "Recria", "Cria y recria", "Invernada", "Ciclo completo", "Feedlot"];
     // Check if field value is valid
@@ -59,5 +59,5 @@ module.exports = {
     hasRequiredFields,
     hasCreatableFields,
     hasUpdatableFields,
-    esRubroValido
+    esRubroPrincipalValido
 }
