@@ -17,13 +17,18 @@ const animalSheet = async (fileData) => {
     const fileName = fileData.originalname;
     // Generate JSON representation of excel file
     const JsonExcelData = await fileHandler.getJsonExcelData(filePath);
+    // Delete temporal message created
+    const fileDeleted = await fileHandler.deleteFile(filePath);
+    if (fileDeleted instanceof Error) {
+        return httpMsgHandler.code500('Error deleting File', fileDeleted.message);
+    }
     /*
+    // Loop through all the rows in the file
     for (const excelRow of JsonExcelData) {
         console.log('ExcelRow', excelRow);
     }
     */
-    // Delete temporal message created
-    const fileDeleted = await fileHandler.deleteFile(filePath);
+    
 
     return httpMsgHandler.code200('File '+fileName+' saved successfully', JsonExcelData);
     /*

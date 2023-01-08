@@ -40,12 +40,6 @@ app.use('/test', (req, res) => {
   res.send('Hello World! Welcome!');
 });
 
-// Send a message indicating the server is working properly
-app.use('/variables', (req, res) => {
-  //res.send({ code: 204, status: "No Content", message: "Hello World! Welcome!" });
-  res.send(process.env);
-});
-
 // If none route matches the request will fail and sent this message
 app.use('*', (req, res) => {
   res.status(404).send({ code: 404, status: "Not Found", message: "Empty Route! Are you lost?" });
