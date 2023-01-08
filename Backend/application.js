@@ -31,69 +31,14 @@ app.use("/api/v1/establishment", establishmentRoutes);
 const animalRoutes = require("./Routes/animalRoutes");
 app.use("/api/v1/animal", animalRoutes);
 
+const fileRoutes = require("./Routes/fileRoutes");
+app.use("/api/v1/file", fileRoutes);
+
 // Send a message indicating the server is working properly
 app.use('/test', (req, res) => {
   //res.send({ code: 204, status: "No Content", message: "Hello World! Welcome!" });
   res.send('Hello World! Welcome!');
 });
-
-
-////////////////////////////////////////////////////////////////////////////////
-const multer  = require('multer')
-
-const fileStorage = multer.diskStorage({
-  destination: 'tmp/my-uploads',
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname )
-  }
-})
-//const upload = multer({ dest: 'uploads/' });
-/*
-const upload = multer({ storage: fileStorage });
-app.post('/multer', upload.single('PlanillaAnimales'), function (req, res, next) {
-  // Todo salió bien.
-  // Collect Content-Type header value
-  const contentTypeHeaderValue = req.get('Content-Type');
-  // Collect Content-Type Value from authorization header
-  const contentTypeValue = contentTypeHeaderValue.split(';')[0];
-  console.log('file');
-  console.log(req.file);
-  res.status(200).send({ code: 200, status: "OK", message: "Recibido-"+contentTypeValue });
-  // req.file es el `avatar` del archivo
-  // req.body tendrá los campos textuales, en caso de haber alguno.
-})
-*/
-const upload = multer({ storage: fileStorage }).single('PlanillaAnimales');
-app.post('/multer', function (req, res) {
-  upload(req, res, function (err) {
-    if (err instanceof multer.MulterError) {
-      // Un error de Multer ocurrió durante la subida.
-      res.status(500).send({ code: 500, status: "ERROR", message: "Un error de Multer ocurrió durante la subida.\n"+err });
-    } else if (err) {
-      // Un error desconocido ocurrió durante la subida.
-      res.status(500).send({ code: 500, status: "ERROR", message: "Un error desconocido ocurrió durante la subida." });
-    }
-    // Todo salió bien.
-    // Collect Content-Type header value
-    const contentTypeHeaderValue = req.get('Content-Type');
-    // Collect Content-Type Value from authorization header
-    const contentTypeValue = contentTypeHeaderValue.split(';')[0];
-    console.log('file');
-    console.log(req.file);
-    res.status(200).send({ code: 200, status: "OK", message: "Recibido-"+contentTypeValue });
-    // req.file es el `avatar` del archivo
-    // req.body tendrá los campos textuales, en caso de haber alguno.
-  })
-})
-
-/*
-COMENTARIOS
-validar content type
-validar fieldname: 'PlanillaAnimales'
-almacenar originalname: 'TEST-PlanillaAnimales.xlsx' para mostrar
-almacenar path: 'tmp\\my-uploads\\1672974242230-TEST-PlanillaAnimales.xlsx' para leer y eliminar
-*/
-////////////////////////////////////////////////////////////////////////////////
 
 // If none route matches the request will fail and sent this message
 app.use('*', (req, res) => {

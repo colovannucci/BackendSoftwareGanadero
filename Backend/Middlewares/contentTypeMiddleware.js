@@ -21,8 +21,21 @@ const isApplicationJson = async (req, res, next) => {
     const contentTypeHeaderValue = req.get('Content-Type');
     // Check if Content-Type header is setted as application/json
     if (contentTypeHeaderValue != 'application/json'){
-    //if (!contentTypeHeaderValue.equals('application/json')){
         const http415 = httpMsgHandler.code415('Content-Type Header must have application json value');
+        return res.status(http415.code).send(http415);
+    }
+    // Middleware passed successfully
+    next();
+}
+
+const isMultipartFormData = async (req, res, next) => {
+    // Collect Content-Type header value
+    const contentTypeHeaderValue = req.get('Content-Type');
+    // Collect falue from header because it normally is 'multipart/form-data; boundary=???'
+    const contentTypeValue = contentTypeHeaderValue.split(';')[0];
+    // Check if Content-Type header is setted as application/json
+    if (contentTypeValue != 'multipart/form-data'){
+        const http415 = httpMsgHandler.code415('Content-Type Header must have multipart form data value');
         return res.status(http415.code).send(http415);
     }
     // Middleware passed successfully
@@ -31,7 +44,8 @@ const isApplicationJson = async (req, res, next) => {
 
 module.exports = {
     hasContentTypeHeader,
-    isApplicationJson
+    isApplicationJson,
+    isMultipartFormData
 };
 
 
