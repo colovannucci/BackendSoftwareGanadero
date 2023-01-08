@@ -1,6 +1,9 @@
 // Use restrictive JS mode to avoid silence errors of the project
 'use strict'
 
+// Use environment variables
+require('dotenv').config()
+
 // Require handler http messages
 const httpMsgHandler = require('../Helpers/handleHttpMessage');
 // Require handleDate
@@ -9,11 +12,13 @@ const handleDate = require('../Helpers/handleDate');
 const multer  = require('multer');
 
 const saveAnimalSheet = async (req, res, next) => {
+    // Collect relative route to save temporal files
+    //const APPSETTING_PATH_TEMPORALFILES = process.env.APPSETTING_PATH_TEMPORALFILES;
     // Generate storage instance of multer object
     const storage = multer.diskStorage({
         //destination: './Backend/TemporalFiles',
         destination: function (req, file, cb) {
-            cb(null, './Backend/TemporalFiles' )
+            cb(null, process.env.APPSETTING_PATH_TEMPORALFILES1 )
         },
         filename: function (req, file, cb) {
           cb(null, handleDate.getStrDateNowFileFormat() + "-" + file.originalname )
