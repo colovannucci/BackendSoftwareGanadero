@@ -12,16 +12,35 @@ const fileValidator = require('../Validators/fileValidator');
 
 const animalSheet = async (fileData) => {
     // Collect filePath of file
-    const filePath = fileData.path;
+    let filePath = "";
     // Collect originalname of file to show
-    const fileName = fileData.originalname;
+    let fileName = "";
+    try {
+        // Collect filePath of file
+        filePath = fileData.path;
+        // Collect originalname of file to show
+        fileName = fileData.originalname;
+    }
+    catch (err) {
+        return httpMsgHandler.code400('Error reading file sent. Please select it and send it again');
+    }
     // Generate JSON representation of excel file
     const JsonExcelData = await fileHandler.getJsonExcelData(filePath);
-    // Delete temporal message created
+    /*
+    // Delete temporal file created
     const fileDeleted = await fileHandler.deleteFile(filePath);
     if (fileDeleted instanceof Error) {
         return httpMsgHandler.code500('Error deleting File', fileDeleted.message);
     }
+    */
+    //console.log('JsonExcelData', JsonExcelData);
+
+    // Check if body has all required columns
+    const excelHasRequiredColumns = await fileValidator.excelHasRequiredColumns(JsonExcelData);
+    if (!excelHasRequiredColumns) {
+        return httpMsgHandler.code400("Missing columns on sheet");
+    }
+
     /*
     // Loop through all the rows in the file
     for (const excelRow of JsonExcelData) {
@@ -32,11 +51,6 @@ const animalSheet = async (fileData) => {
 
     return httpMsgHandler.code200('File '+fileName+' saved successfully', JsonExcelData);
     /*
-    // Check if body has all required fields
-    const hasRequiredFields = await fileValidator.hasRequiredFields(fileData);
-    if (!hasRequiredFields) {
-        return httpMsgHandler.code400("Missing fields on body");
-    }
     // Check if body has only valid fields
     const hasCreatableFields = await fileValidator.hasCreatableFields(fileData);
     if (!hasCreatableFields) {

@@ -6,6 +6,8 @@ const xlsx = require('xlsx');
 // Importa el submódulo `promises` del módulo de node `file-system`
 const fs = require('fs').promises
 
+// generate collect columns in Strings: [ primeras 12 valores que deerminan 12 columnas
+
 const getJsonExcelData = async (filepath) => {
     // Generate an instance of excel file uploaded
     const excelWorkbook = xlsx.readFile(filepath);
@@ -15,6 +17,8 @@ const getJsonExcelData = async (filepath) => {
     const firstSheet = workbookSheets[0];
     // Parse excel sheet data to JSON object
     const excelData = xlsx.utils.sheet_to_json(excelWorkbook.Sheets[firstSheet]);
+    console.log('excelData\n', excelData);
+
     return excelData;
 }
 

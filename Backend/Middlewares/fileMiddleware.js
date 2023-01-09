@@ -12,11 +12,6 @@ const handleDate = require('../Helpers/handleDate');
 const multer  = require('multer');
 
 const saveAnimalSheet = async (req, res, next) => {
-    // Collect user email from request body
-    const userEmail = req.body.email;
-    console.log('userEmail', userEmail);
-    console.log('body', req.body);
-    console.log('file', req.file);
     // Collect temporal route provided by azure app service "C:\\local\\Temp"
     const TEMP = process.env.TEMP;
     // Generate storage instance of multer object
